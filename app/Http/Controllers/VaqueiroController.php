@@ -117,9 +117,45 @@ class VaqueiroController extends Controller
 
     public function relatorio()
     {
-        $vaqueiros = Vaqueiro::orderBy('nome')->get();
-        $pdf = PDF::loadView('pdf.relatorio', compact('vaqueiros'));
-        $name = 'Relatorio_' . now()->format('d_m_Y_h_i_s') . '.pdf';
+        // Buscar vaqueiros com contagem de senhas
+        $vaqueiros = Vaqueiro::with('senhas')
+            ->withCount('senhas')
+            ->orderBy('nome')
+            ->get();
+
+        // Calculando estatísticas
+        $totalVaqueiros = $vaqueiros->count();
+        $totalSenhas = $vaqueiros->sum('senhas_count');
+        $totalQuantidade = $vaqueiros->sum('quantidade');
+        
+        // Contar por tipo de pagamento
+        $pagamentoStats = $vaqueiros->groupBy('pagamento')
+            ->map(function($group) {
+                return $group->count();
+            });
+        
+        // Vaqueiros disponíveis e indisponíveis
+        $disponiveis = $vaqueiros->where('disponivel', 'sim')->count();
+        $indisponíveis = $vaqueiros->where('disponivel', 'não')->count();
+        
+        // Data do relatório
+        $dataRelatorio = now();
+        
+        // Passar todos os dados para a view
+        $dados = compact(
+            'vaqueiros',
+            'totalVaqueiros',
+            'totalSenhas',
+            'totalQuantidade',
+            'pagamentoStats',
+            'disponiveis',
+            'indisponíveis',
+            'dataRelatorio'
+        );
+        
+        $pdf = PDF::loadView('pdf.relatorio', $dados);
+        $pdf->setPaper('A4', 'portrait');
+        $name = 'Relatorio_' . now()->format('d_m_Y_H_i_s') . '.pdf';
 
         return $pdf->stream($name);
     }
