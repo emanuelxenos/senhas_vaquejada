@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\VaqueiroController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RedirectController;
+use App\Http\Controllers\SettingController;
 
 // Rota home (redirecionador)
 Route::get('/', [RedirectController::class, 'index']);
@@ -32,5 +33,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/vaqueiros/{vaqueiro}/pdf', [VaqueiroController::class, 'gerarPdf'])->name('vaqueiros.pdf');
     Route::get('/relatorio', [VaqueiroController::class, 'relatorio'])->name('relatorio');
+
+    // Configurações do sistema
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
 });
 

@@ -395,6 +395,19 @@
                 </ul>
             </div>
 
+            <!-- CONFIGURAÇÕES -->
+            <div class="menu-section">
+                <div class="menu-section-title">Configuração</div>
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li class="menu-item">
+                        <a href="{{ route('settings.index') }}" class="menu-link {{ request()->routeIs('settings*') ? 'active' : '' }}">
+                            <i class="fas fa-cog menu-icon"></i>
+                            <span class="menu-label">Configurações</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
             <!-- PARA O FUTURO -->
             <div class="menu-section" style="opacity: 0.5;">
                 <div class="menu-section-title">Em Breve</div>

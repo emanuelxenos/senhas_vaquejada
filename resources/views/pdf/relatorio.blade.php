@@ -230,7 +230,7 @@
         <!-- CABEÇALHO -->
         <div class="header">
             <div class="header-title">📋 RELATÓRIO DE VAQUEIROS E SENHAS</div>
-            <div class="header-subtitle">Parque Francisco Alves - Vaquejada 2026</div>
+            <div class="header-subtitle">{{ config('parque.name') }} - Vaquejada 2026</div>
             <div class="header-date">Gerado em {{ $dataRelatorio->format('d/m/Y às H:i:s') }}</div>
         </div>
 
