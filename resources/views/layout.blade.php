@@ -15,11 +15,35 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
+            <ul class="navbar-nav me-auto">
+                @auth
                 <li class="nav-item"><a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('vaqueiros.index') }}">Vaqueiros</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('senhas.index') }}">Senhas</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('senhas.create') }}">Cadastrar Senhas</a></li>
+                @endauth
+            </ul>
+            <ul class="navbar-nav">
+                @auth
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        👤 {{ Auth::user()->name }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li>
+                            <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                                @csrf
+                                <button type="submit" class="dropdown-item" style="border: none; background: none; cursor: pointer;">
+                                    Sair
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+                @else
+                <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Login</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('register') }}">Registrar</a></li>
+                @endauth
             </ul>
         </div>
     </div>
