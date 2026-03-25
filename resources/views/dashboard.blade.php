@@ -4,7 +4,7 @@
 <div class="row mb-4">
     <div class="col-12">
         <div class="p-4 bg-light rounded border">
-            <h1 class="display-6">Dashboard - Senhas de Vaquejada</h1>
+            <h1 class="display-6">Painel De Controle - Senhas de Vaquejada</h1>
             <p class="lead">Visualize os dados do sistema com ações rápidas para cadastro e geração de relatórios.</p>
         </div>
     </div>

@@ -9,14 +9,15 @@
         <input type="text" name="nome" class="form-control" required>
     </div>
     <div class="mb-3">
-        <label class="form-label">Esteira</label>
+        <label class="form-label">Bate Esteira</label>
         <input type="text" name="esteira" class="form-control" required>
     </div>
     <div class="mb-3">
         <label class="form-label">Forma de Pagamento</label>
         <select name="pagamento" class="form-select" required>
             <option value="">Escolha...</option>
-            <option value="A vista">À vista</option>
+            <option value="A vista">Dinheiro Físico</option>
+            <option value="Pix">Pix</option>
             <option value="Crediario">Crediário</option>
             <option value="Troca">Troca</option>
             <option value="Cheque">Cheque</option>

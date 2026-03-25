@@ -10,7 +10,7 @@
     <thead>
         <tr>
             <th>Nome</th>
-            <th>Esteira</th>
+            <th>Bate Esteira</th>
             <th>Qtd</th>
             <th>Pagamento</th>
             <th>Representação</th>
