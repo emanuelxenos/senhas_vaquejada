@@ -60,17 +60,23 @@
 
             <div style="margin: 8px 0;"></div>
 
-            <div class="disputa-set">
-                <span class="label">Disputa:</span>
-                <span class="quadrado"></span>
-                <span class="quadrado"></span>
-                <span class="quadrado"></span>
-            </div>
-
-            <div class="disputa-subset">
-                <span class="quadrado"></span>
-                <span class="quadrado"></span>
-                <span class="quadrado"></span>
+            <div style="margin: 8px 0;">
+                <div style="font-weight: bold; font-size: 12px; margin-bottom: 6px;">Disputa:</div>
+                <div style="display: grid; grid-template-columns: repeat(3, auto); gap: 5px; margin-top: 4px;">
+                    <span class="quadrado"></span>
+                    <span class="quadrado"></span>
+                    <span class="quadrado"></span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, auto); gap: 5px; margin-top: 4px;">
+                    <span class="quadrado"></span>
+                    <span class="quadrado"></span>
+                    <span class="quadrado"></span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, auto); gap: 5px; margin-top: 4px;">
+                    <span class="quadrado"></span>
+                    <span class="quadrado"></span>
+                    <span class="quadrado"></span>
+                </div>
             </div>
 
             <div style="margin: 8px 0;"></div>
