@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Competidor extends Model
 {
+
+    protected $table = 'competidores';
     protected $fillable = [
         'nome',
         'cpf',
