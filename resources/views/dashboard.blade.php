@@ -4,8 +4,19 @@
 <div class="row mb-4">
     <div class="col-12">
         <div class="p-4 bg-light rounded border">
-            <h1 class="display-6">Painel De Controle - Senhas de Vaquejada</h1>
-            <p class="lead">Visualize os dados do sistema com ações rápidas para cadastro e geração de relatórios.</p>
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+                <div>
+                    <h1 class="display-6">Painel De Controle - Senhas de Vaquejada</h1>
+                    <p class="lead mb-2">Visualize os dados do sistema com ações rápidas para cadastro e geração de relatórios.</p>
+                    <p class="text-muted mb-0">Use o QR Code para abrir rapidamente no celular.</p>
+                </div>
+                <div class="text-center ms-md-3">
+                    <a id="dashboardQrLink" href="#" target="_blank" rel="noopener" class="text-decoration-none">
+                        <img id="dashboardQrCode" src="" alt="QR Code para abrir o sistema no celular" class="img-thumbnail" style="width: 120px; height: 120px;">
+                    </a>
+                    <div class="small text-muted mt-1">Escaneie para abrir</div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -100,6 +111,14 @@
 @section('scripts')
 <script src="{{ asset('js/chart.min.js') }}"></script>
 <script>
+    // QR Code para abrir a URL atual no celular
+    const mobileUrl = window.location.origin;
+    const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(mobileUrl)}`;
+    const qrImg = document.getElementById('dashboardQrCode');
+    const qrLink = document.getElementById('dashboardQrLink');
+    qrImg.src = qrImageUrl;
+    qrLink.href = mobileUrl;
+
     // Gráfico de pagamentos
     const ctxPagamentos = document.getElementById('pagamentosChart').getContext('2d');
     const pagamentosData = @json($pagamentos);

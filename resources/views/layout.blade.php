@@ -25,6 +25,7 @@
             display: flex;
             background-color: #f5f6fa;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         /* SIDEBAR */
@@ -79,6 +80,16 @@
 
         .sidebar-toggle:hover {
             color: var(--primary-color);
+        }
+
+        .sidebar-mobile-close {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 22px;
+            line-height: 1;
         }
 
         /* MENU */
@@ -269,11 +280,14 @@
             }
 
             .topbar {
-                left: 0;
+                left: 0 !important;
+                right: 0;
+                width: 100%;
             }
 
             .main-content {
-                margin-left: 0;
+                margin-left: 0 !important;
+                width: 100%;
             }
 
             .mobile-toggle {
@@ -282,6 +296,16 @@
 
             .sidebar-toggle {
                 display: none;
+            }
+
+            .sidebar-mobile-close {
+                display: inline-block;
+            }
+
+            .sidebar.collapsed ~ .topbar,
+            .sidebar.collapsed ~ .main-content {
+                margin-left: 0 !important;
+                left: 0 !important;
             }
         }
 
@@ -345,9 +369,14 @@
                 <i class="fas fa-horse-head"></i>
                 <span>Vaquejada</span>
             </div>
-            <button class="sidebar-toggle" onclick="toggleSidebar()" title="Recolher">
-                <i class="fas fa-chevron-left"></i>
-            </button>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <button class="sidebar-toggle" onclick="toggleSidebar()" title="Recolher">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="sidebar-mobile-close" onclick="closeSidebarMobile()" title="Fechar menu">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
         </div>
 
         <nav class="sidebar-menu" style="display: flex; flex-direction: column; height: calc(100vh - 130px);">
@@ -526,6 +555,11 @@
     function toggleSidebarMobile() {
         const sidebar = document.querySelector('.sidebar');
         sidebar.classList.toggle('show');
+    }
+
+    function closeSidebarMobile() {
+        const sidebar = document.querySelector('.sidebar');
+        sidebar.classList.remove('show');
     }
 
     // Fechar sidebar ao clicar em um link (mobile)

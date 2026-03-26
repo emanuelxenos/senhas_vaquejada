@@ -42,7 +42,7 @@
             </div>
 
             <div class="info">
-                <span class="label">Esteira:</span> {{ $inscricao->bateEsteira->nome }}
+                <span class="label">Bate-Esteira:</span> {{ $inscricao->bateEsteira->nome }}
             </div>
 
             <div class="info">
