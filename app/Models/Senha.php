@@ -2,22 +2,42 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Senha extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'numero',
-        'vaqueiro_id',
+        'inscricao_id',
+        'numero_senha',
+        'status',
     ];
 
-    public $timestamps = false;
+    protected $casts = [
+        'status' => 'string',
+    ];
 
+    /**
+     * A inscrição à qual esta senha pertence
+     */
+    public function inscricao(): BelongsTo
+    {
+        return $this->belongsTo(Inscricao::class);
+    }
+
+    /**
+     * O vaqueiro desta senha (através da inscrição)
+     */
     public function vaqueiro()
     {
-        return $this->belongsTo(Vaqueiro::class);
+        return $this->inscricao->vaqueiro();
+    }
+
+    /**
+     * O bate-esteira desta senha (através da inscrição)
+     */
+    public function bateEsteira()
+    {
+        return $this->inscricao->bateEsteira();
     }
 }
