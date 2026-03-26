@@ -12,6 +12,7 @@ class Inscricao extends Model
     protected $fillable = [
         'vaqueiro_id',
         'bate_esteira_id',
+        'quantidade_senhas',
         'forma_pagamento',
         'valor_total',
         'status_pagamento',
@@ -19,6 +20,7 @@ class Inscricao extends Model
 
     protected $casts = [
         'valor_total' => 'decimal:2',
+        'quantidade_senhas' => 'integer',
         'status_pagamento' => 'string',
     ];
 

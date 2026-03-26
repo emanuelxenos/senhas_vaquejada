@@ -14,15 +14,25 @@
     <div class="col-sm-6 col-xl-3 mb-3">
         <div class="card border-primary h-100 shadow-sm">
             <div class="card-body">
-                <h5 class="card-title">Vaqueiros</h5>
-                <p class="card-text fs-2 fw-bold text-primary">{{ $totalVaqueiros }}</p>
-                <a href="{{ route('vaqueiros.index') }}" class="btn btn-sm btn-primary">Ver todos</a>
+                <h5 class="card-title">Competidores</h5>
+                <p class="card-text fs-2 fw-bold text-primary">{{ $totalCompetidores }}</p>
+                <a href="{{ route('competidores.index') }}" class="btn btn-sm btn-primary">Ver todos</a>
             </div>
         </div>
     </div>
 
     <div class="col-sm-6 col-xl-3 mb-3">
         <div class="card border-success h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Inscrições</h5>
+                <p class="card-text fs-2 fw-bold text-success">{{ $totalInscricoes }}</p>
+                <a href="{{ route('inscricoes.index') }}" class="btn btn-sm btn-success">Ver lista</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3 mb-3">
+        <div class="card border-info h-100 shadow-sm">
             <div class="card-body">
                 <h5 class="card-title">Senhas</h5>
                 <p class="card-text fs-2 fw-bold text-success">{{ $totalSenhas }}</p>
@@ -32,21 +42,14 @@
     </div>
 
     <div class="col-sm-6 col-xl-3 mb-3">
-        <div class="card border-info h-100 shadow-sm">
+        <div class="card border-secondary h-100 shadow-sm">
             <div class="card-body">
-                <h5 class="card-title">Disponíveis</h5>
-                <p class="card-text fs-2 fw-bold text-info">{{ $vaqueirosDisponiveis }}</p>
-                <p class="mb-0">Vaqueiros ainda com senhas</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-sm-6 col-xl-3 mb-3">
-        <div class="card border-danger h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Indisponíveis</h5>
-                <p class="card-text fs-2 fw-bold text-danger">{{ $vaqueirosIndisponiveis }}</p>
-                <p class="mb-0">Vaqueiros finalizados</p>
+                <h5 class="card-title">Acesso rápido</h5>
+                <p class="mb-2 text-muted">Cadastros e relatórios</p>
+                <div class="d-grid gap-2">
+                    <a href="{{ route('competidores.create') }}" class="btn btn-sm btn-outline-primary">Novo Competidor</a>
+                    <a href="{{ route('inscricoes.create') }}" class="btn btn-sm btn-outline-success">Nova Inscrição</a>
+                </div>
             </div>
         </div>
     </div>
@@ -82,7 +85,8 @@
             <div class="card-body">
                 <h5 class="card-title">Ações rápidas</h5>
                 <div class="btn-group" role="group" aria-label="Acoes rápidas">
-                    <a href="{{ route('vaqueiros.create') }}" class="btn btn-outline-primary">Novo Vaqueiro</a>
+                    <a href="{{ route('competidores.create') }}" class="btn btn-outline-primary">Novo Competidor</a>
+                    <a href="{{ route('inscricoes.create') }}" class="btn btn-outline-success">Nova Inscrição</a>
                     <a href="{{ route('senhas.create') }}" class="btn btn-outline-success">Nova Senha</a>
                     <a href="{{ route('relatorio') }}" target="_blank" class="btn btn-outline-info">Gerar Relatório PDF</a>
                 </div>

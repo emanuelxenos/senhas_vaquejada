@@ -44,7 +44,7 @@
                                 </span>
                             </td>
                             <td>
-                                <span class="badge bg-info">{{ $inscricao->senhas->count() }}</span>
+                                <span class="badge bg-info">{{ $inscricao->senhas_count ?? 0 }}</span>
                             </td>
                             <td>{{ $inscricao->created_at->format('d/m/Y') }}</td>
                             <td>

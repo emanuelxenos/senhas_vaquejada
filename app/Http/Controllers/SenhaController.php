@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Inscricao;
 use App\Models\Senha;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use PDF;
 
 class SenhaController extends Controller
@@ -22,7 +23,12 @@ class SenhaController extends Controller
     public function create()
     {
         $inscricoes = Inscricao::with(['vaqueiro', 'bateEsteira'])
-            ->whereDoesntHave('senhas') // Apenas inscrições sem senhas
+            ->withCount('senhas')
+            // MySQL não permite usar coluna não agregada em HAVING sem GROUP BY.
+            // Filtra via subquery no WHERE (senhas cadastradas < quantidade contratada).
+            ->whereRaw(
+                '(select count(*) from senhas where senhas.inscricao_id = inscricoes.id) < inscricoes.quantidade_senhas'
+            )
             ->get();
 
         return view('senhas.create', compact('inscricoes'));
@@ -30,15 +36,41 @@ class SenhaController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $request->validate([
             'inscricao_id' => 'required|exists:inscricoes,id',
             'senhas' => 'required|array|min:1',
-            'senhas.*' => 'required|string|max:50|unique:senhas,numero_senha',
         ]);
 
-        $inscricao = Inscricao::findOrFail($data['inscricao_id']);
+        $inscricao = Inscricao::withCount('senhas')->findOrFail($request->input('inscricao_id'));
 
-        foreach ($data['senhas'] as $numero) {
+        $quantidade = (int) ($inscricao->quantidade_senhas ?? 0);
+        $jaCadastradas = (int) ($inscricao->senhas_count ?? 0);
+        $restantes = max($quantidade - $jaCadastradas, 0);
+
+        $senhas = collect($request->input('senhas', []))
+            ->map(fn ($v) => is_string($v) ? trim($v) : $v)
+            ->filter(fn ($v) => $v !== null && $v !== '')
+            ->values()
+            ->all();
+
+        if ($restantes === 0) {
+            return redirect()->route('senhas.index')->with('sucesso', 'Esta inscrição já está completa.');
+        }
+
+        // Exigir exatamente a quantidade restante (evita “10 inputs vazios” quebrando o cadastro)
+        if (count($senhas) !== $restantes) {
+            return back()
+                ->withErrors(['senhas' => "Você precisa cadastrar exatamente {$restantes} senha(s) para esta inscrição."])
+                ->withInput();
+        }
+
+        // Validar conteúdo/uniqueness depois de filtrar vazios
+        validator(
+            ['senhas' => $senhas],
+            ['senhas' => 'required|array|min:1', 'senhas.*' => 'required|string|max:50|distinct|unique:senhas,numero_senha']
+        )->validate();
+
+        foreach ($senhas as $numero) {
             Senha::create([
                 'inscricao_id' => $inscricao->id,
                 'numero_senha' => $numero,
@@ -106,6 +138,10 @@ class SenhaController extends Controller
                 return $group->count();
             });
 
+        // Resumo rápido (substitui o conceito antigo de disponível/indisponível)
+        $disponiveis = (int) ($pagamentoStatus['pago'] ?? 0);
+        $indisponiveis = (int) ($pagamentoStatus['pendente'] ?? 0) + (int) ($pagamentoStatus['cancelado'] ?? 0);
+
         // Status das senhas
         $senhaStatus = collect();
         foreach ($inscricoes as $inscricao) {
@@ -125,6 +161,8 @@ class SenhaController extends Controller
             'totalSenhas',
             'pagamentoStats',
             'pagamentoStatus',
+            'disponiveis',
+            'indisponiveis',
             'senhaStatus',
             'dataRelatorio'
         );

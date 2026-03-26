@@ -11,6 +11,7 @@ class InscricaoController extends Controller
     public function index()
     {
         $inscricoes = Inscricao::with(['vaqueiro', 'bateEsteira'])
+            ->withCount('senhas')
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -28,6 +29,7 @@ class InscricaoController extends Controller
         $data = $request->validate([
             'vaqueiro_id' => 'required|exists:competidores,id',
             'bate_esteira_id' => 'required|exists:competidores,id|different:vaqueiro_id',
+            'quantidade_senhas' => 'required|integer|min:1|max:50',
             'forma_pagamento' => 'required|string|max:50',
             'valor_total' => 'required|numeric|min:0',
             'status_pagamento' => 'required|in:pendente,pago,cancelado',
@@ -49,6 +51,7 @@ class InscricaoController extends Controller
         $data = $request->validate([
             'vaqueiro_id' => 'required|exists:competidores,id',
             'bate_esteira_id' => 'required|exists:competidores,id|different:vaqueiro_id',
+            'quantidade_senhas' => 'required|integer|min:1|max:50',
             'forma_pagamento' => 'required|string|max:50',
             'valor_total' => 'required|numeric|min:0',
             'status_pagamento' => 'required|in:pendente,pago,cancelado',

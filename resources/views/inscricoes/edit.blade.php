@@ -75,6 +75,15 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
+                            <label for="quantidade_senhas" class="form-label">Quantidade de Senhas *</label>
+                            <input type="number" name="quantidade_senhas" id="quantidade_senhas"
+                                   class="form-control @error('quantidade_senhas') is-invalid @enderror"
+                                   value="{{ old('quantidade_senhas', $inscricao->quantidade_senhas ?? 1) }}" min="1" max="50" required>
+                            @error('quantidade_senhas')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
                             <label for="status_pagamento" class="form-label">Status do Pagamento *</label>
                             <select name="status_pagamento" id="status_pagamento" class="form-select @error('status_pagamento') is-invalid @enderror" required>
                                 <option value="pendente" {{ old('status_pagamento', $inscricao->status_pagamento) == 'pendente' ? 'selected' : '' }}>Pendente</option>

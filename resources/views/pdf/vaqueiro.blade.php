@@ -31,7 +31,7 @@
         <div class="senha-card">
             <div class="linha-fina"></div>
             <div class="header">{{ config('parque.name') }}</div>
-            <div class="date">{{ optional($vaqueiro->data)->format('d/m/Y') ?? now()->format('d/m/Y') }}</div>
+            <div class="date">{{ optional($inscricao->created_at)->format('d/m/Y') ?? now()->format('d/m/Y') }}</div>
 
             <div class="numero">
                 <span class="label">N°:</span> {{ $senha->numero_senha }}

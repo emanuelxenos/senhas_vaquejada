@@ -153,6 +153,12 @@
             border: 1px solid #f5c6cb;
         }
 
+        .badge-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
         /* ESTATÍSTICAS SECUNDÁRIAS */
         .stats-section {
             margin-top: 15px;
@@ -229,8 +235,8 @@
     <div class="container">
         <!-- CABEÇALHO -->
         <div class="header">
-            <div class="header-title">📋 RELATÓRIO DE VAQUEIROS E SENHAS</div>
-            <div class="header-subtitle">{{ config('parque.name') }} - Vaquejada 2026</div>
+            <div class="header-title">RELATÓRIO DE INSCRIÇÕES E SENHAS</div>
+            <div class="header-subtitle">{{ config('parque.name') }}</div>
             <div class="header-date">Gerado em {{ $dataRelatorio->format('d/m/Y às H:i:s') }}</div>
         </div>
 
@@ -248,11 +254,11 @@
                 </div>
                 <div class="summary-item">
                     <div class="summary-number">{{ $disponiveis }}</div>
-                    <div class="summary-label">Disponíveis</div>
+                    <div class="summary-label">Pagas</div>
                 </div>
                 <div class="summary-item">
-                    <div class="summary-number">{{ $indisponíveis }}</div>
-                    <div class="summary-label">Indisponíveis</div>
+                    <div class="summary-number">{{ $indisponiveis }}</div>
+                    <div class="summary-label">Pendentes/Canceladas</div>
                 </div>
             </div>
         </div>

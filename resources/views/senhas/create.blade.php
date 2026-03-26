@@ -20,7 +20,7 @@
                             @foreach($inscricoes as $inscricao)
                                 <option value="{{ $inscricao->id }}">
                                     {{ $inscricao->vaqueiro->nome }} & {{ $inscricao->bateEsteira->nome }}
-                                    ({{ $inscricao->senhas->count() }} senhas já cadastradas)
+                                    ({{ $inscricao->senhas_count ?? 0 }}/{{ $inscricao->quantidade_senhas ?? 0 }} cadastradas)
                                 </option>
                             @endforeach
                         </select>
@@ -32,6 +32,10 @@
                     <div class="mb-3" id="senhasFields">
                         <p class="text-muted">Selecione uma inscrição para ver os campos de senhas.</p>
                     </div>
+
+                    @error('senhas')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
 
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('senhas.index') }}" class="btn btn-secondary">
@@ -61,24 +65,38 @@
         const inscricao = inscricoes.find(item => item.id === id);
 
         if (inscricao) {
+            const quantidade = parseInt(inscricao.quantidade_senhas ?? 0, 10);
+            const jaCadastradas = parseInt(inscricao.senhas_count ?? 0, 10);
+            const restantes = Math.max(quantidade - jaCadastradas, 0);
+
             // Verificar se já tem senhas cadastradas
-            if (inscricao.senhas && inscricao.senhas.length > 0) {
+            if (jaCadastradas > 0) {
                 campo.innerHTML = `
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle"></i>
-                        Esta inscrição já possui ${inscricao.senhas.length} senha(s) cadastrada(s).
-                        Você pode adicionar mais senhas abaixo.
+                        Esta inscrição já possui ${jaCadastradas} senha(s) cadastrada(s).
+                        Restam ${restantes} senha(s) para completar o pacote.
                     </div>
                 `;
             }
 
-            // Adicionar campos para novas senhas
-            for (let i = 1; i <= 10; i++) { // Máximo 10 senhas por vez
+            if (restantes === 0) {
+                campo.innerHTML += `
+                    <div class="alert alert-success mb-0">
+                        <i class="fas fa-check-circle"></i>
+                        Esta inscrição já está completa.
+                    </div>
+                `;
+                return;
+            }
+
+            // Adicionar campos para as senhas restantes
+            for (let i = 1; i <= restantes; i++) {
                 const div = document.createElement('div');
                 div.className = 'mb-2';
                 div.innerHTML = `
                     <label class="form-label">Senha ${i}</label>
-                    <input class="form-control" name="senhas[]" placeholder="Ex: 001, 002, etc." />
+                    <input class="form-control" name="senhas[]" placeholder="Ex: 001, 002, etc." required />
                 `;
                 campo.appendChild(div);
             }

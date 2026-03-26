@@ -136,7 +136,7 @@ class VaqueiroController extends Controller
         
         // Vaqueiros disponíveis e indisponíveis
         $disponiveis = $vaqueiros->where('disponivel', 'sim')->count();
-        $indisponíveis = $vaqueiros->where('disponivel', 'não')->count();
+        $indisponiveis = $vaqueiros->where('disponivel', 'nao')->count();
         
         // Data do relatório
         $dataRelatorio = now();
@@ -149,7 +149,7 @@ class VaqueiroController extends Controller
             'totalQuantidade',
             'pagamentoStats',
             'disponiveis',
-            'indisponíveis',
+            'indisponiveis',
             'dataRelatorio'
         );
         
