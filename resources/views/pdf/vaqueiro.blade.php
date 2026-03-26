@@ -34,19 +34,19 @@
             <div class="date">{{ optional($vaqueiro->data)->format('d/m/Y') ?? now()->format('d/m/Y') }}</div>
 
             <div class="numero">
-                <span class="label">N°:</span> {{ $senha->numero }}
+                <span class="label">N°:</span> {{ $senha->numero_senha }}
             </div>
 
             <div class="info">
-                <span class="label">Puxador:</span> {{ $vaqueiro->nome }}
+                <span class="label">Puxador:</span> {{ $inscricao->vaqueiro->nome }}
             </div>
 
             <div class="info">
-                <span class="label">Esteira:</span> {{ $vaqueiro->esteira }}
+                <span class="label">Esteira:</span> {{ $inscricao->bateEsteira->nome }}
             </div>
 
             <div class="info">
-                <span class="label">Representação:</span> {{ $vaqueiro->representacao }}
+                <span class="label">Representação:</span> {{ $inscricao->vaqueiro->representacao }}
             </div>
 
             <div style="margin: 8px 0;"></div>
@@ -109,34 +109,38 @@
             <div class="linha-fina"></div>
 
             <div class="info">
-                <span class="label">Puxador:</span> {{ $vaqueiro->nome }}
+                <span class="label">Puxador:</span> {{ $inscricao->vaqueiro->nome }}
             </div>
 
             <div class="info">
-                <span class="label">Esteira:</span> {{ $vaqueiro->esteira }}
+                <span class="label">Esteira:</span> {{ $inscricao->bateEsteira->nome }}
             </div>
 
             <div class="info">
-                <span class="label">Representação:</span> {{ $vaqueiro->representacao }}
+                <span class="label">Representação:</span> {{ $inscricao->vaqueiro->representacao }}
             </div>
 
             <div class="info">
-                <span class="label">Quantidade:</span> {{ $vaqueiro->quantidade }}
+                <span class="label">Valor Total:</span> R$ {{ number_format($inscricao->valor_total, 2, ',', '.') }}
             </div>
 
             <div class="info">
-                <span class="label">Pagamento:</span> {{ $vaqueiro->pagamento }}
+                <span class="label">Pagamento:</span> {{ $inscricao->forma_pagamento }}
+            </div>
+
+            <div class="info">
+                <span class="label">Status:</span> {{ ucfirst($inscricao->status_pagamento) }}
             </div>
 
             <div class="info">
                 <span class="label">Senhas:</span>
                 @foreach($senhas as $senha)
-                    {{ $senha->numero }}@if(!$loop->last), @endif
+                    {{ $senha->numero_senha }}@if(!$loop->last), @endif
                 @endforeach
             </div>
 
             <div class="info">
-                <span class="label">Data:</span> {{ optional($vaqueiro->data)->format('d/m/Y H:i:s') ?? now()->format('d/m/Y H:i:s') }}
+                <span class="label">Data:</span> {{ $inscricao->created_at->format('d/m/Y H:i:s') }}
             </div>
 
             <div class="linha-fina"></div>

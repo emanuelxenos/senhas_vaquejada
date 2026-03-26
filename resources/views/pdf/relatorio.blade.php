@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Relatório de Vaqueiros e Senhas</title>
+    <title>Relatório de Inscrições e Senhas</title>
     <style>
         * {
             margin: 0;
@@ -239,8 +239,8 @@
             <div class="summary-title">📊 Resumo Executivo</div>
             <div class="summary-grid">
                 <div class="summary-item">
-                    <div class="summary-number">{{ $totalVaqueiros }}</div>
-                    <div class="summary-label">Total de Vaqueiros</div>
+                    <div class="summary-number">{{ $totalInscricoes }}</div>
+                    <div class="summary-label">Inscrições</div>
                 </div>
                 <div class="summary-item">
                     <div class="summary-number">{{ $totalSenhas }}</div>
@@ -261,44 +261,58 @@
         <table>
             <thead>
                 <tr>
-                    <th style="width: 20%;">Puxador</th>
-                    <th style="width: 15%;">Esteira</th>
+                    <th style="width: 20%;">Dupla</th>
                     <th style="width: 15%;">Representação</th>
-                    <th style="width: 12%;">Pagamento</th>
-                    <th style="width: 10%;">Qtd Prev.</th>
+                    <th style="width: 15%;">Pagamento</th>
+                    <th style="width: 12%;">Valor</th>
+                    <th style="width: 10%;">Status</th>
                     <th style="width: 10%;">Senhas</th>
-                    <th style="width: 8%;">Status</th>
+                    <th style="width: 8%;">Status Senhas</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse($vaqueiros as $vaqueiro)
+                @forelse($inscricoes as $inscricao)
                     <tr>
-                        <td><strong>{{ $vaqueiro->nome }}</strong></td>
-                        <td>{{ $vaqueiro->esteira }}</td>
-                        <td>{{ $vaqueiro->representacao }}</td>
-                        <td>{{ ucfirst($vaqueiro->pagamento) }}</td>
-                        <td style="text-align: center;">{{ $vaqueiro->quantidade }}</td>
-                        <td style="text-align: center; font-weight: bold; color: #0d6efd;">{{ $vaqueiro->senhas_count }}</td>
+                        <td><strong>{{ $inscricao->vaqueiro->nome }}</strong><br><small>& {{ $inscricao->bateEsteira->nome }}</small></td>
+                        <td>{{ $inscricao->vaqueiro->representacao }}</td>
+                        <td>{{ ucfirst($inscricao->forma_pagamento) }}</td>
+                        <td>R$ {{ number_format($inscricao->valor_total, 2, ',', '.') }}</td>
                         <td style="text-align: center;">
-                            @if($vaqueiro->disponivel === 'sim')
-                                <span class="badge badge-available">Ativo</span>
+                            @if($inscricao->status_pagamento == 'pago')
+                                <span class="badge badge-available">Pago</span>
+                            @elseif($inscricao->status_pagamento == 'pendente')
+                                <span class="badge badge-warning">Pendente</span>
                             @else
-                                <span class="badge badge-unavailable">Inativo</span>
+                                <span class="badge badge-unavailable">Cancelado</span>
+                            @endif
+                        </td>
+                        <td style="text-align: center; font-weight: bold; color: #0d6efd;">{{ $inscricao->senhas_count }}</td>
+                        <td style="text-align: center;">
+                            @php
+                                $statusCount = $inscricao->senhas->groupBy('status');
+                                $correu = $statusCount->get('correu', collect())->count();
+                                $total = $inscricao->senhas->count();
+                            @endphp
+                            @if($total > 0)
+                                <span class="badge badge-available">{{ $correu }}/{{ $total }}</span>
+                            @else
+                                <span class="badge badge-unavailable">0/0</span>
                             @endif
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" style="text-align: center; color: #999;">Nenhum vaqueiro cadastrado</td>
+                        <td colspan="7" style="text-align: center; color: #999;">Nenhuma inscrição cadastrada</td>
                     </tr>
                 @endforelse
             </tbody>
             <tfoot>
                 <tr class="total-row">
-                    <td colspan="4" style="text-align: right;"><strong>TOTAIS:</strong></td>
-                    <td style="text-align: center;"><strong>{{ $totalQuantidade }}</strong></td>
+                    <td colspan="3" style="text-align: right;"><strong>TOTAIS:</strong></td>
+                    <td style="text-align: center;"><strong>R$ {{ number_format($inscricoes->sum('valor_total'), 2, ',', '.') }}</strong></td>
+                    <td style="text-align: center;"><strong>{{ $totalInscricoes }}</strong></td>
                     <td style="text-align: center;"><strong>{{ $totalSenhas }}</strong></td>
-                    <td style="text-align: center;"><strong>{{ $totalVaqueiros }}</strong></td>
+                    <td style="text-align: center;"><strong>-</strong></td>
                 </tr>
             </tfoot>
         </table>
@@ -311,7 +325,7 @@
                 @forelse($pagamentoStats as $tipo => $quantidade)
                     <div class="stats-item">
                         <span class="stats-label">{{ ucfirst($tipo) }}</span>
-                        <span class="stats-value">{{ $quantidade }} vaqueiro{{ $quantidade !== 1 ? 's' : '' }}</span>
+                        <span class="stats-value">{{ $quantidade }} inscrição{{ $quantidade !== 1 ? 'ões' : '' }}</span>
                     </div>
                 @empty
                     <div class="stats-item">
@@ -320,26 +334,53 @@
                 @endforelse
             </div>
 
-            <!-- DISPONIBILIDADE -->
+            <!-- STATUS PAGAMENTO -->
             <div class="stats-box">
-                <div class="stats-box-title">✅ Status de Disponibilidade</div>
+                <div class="stats-box-title">💰 Status de Pagamento</div>
+                @forelse($pagamentoStatus as $status => $quantidade)
+                    <div class="stats-item">
+                        <span class="stats-label">{{ ucfirst($status) }}</span>
+                        <span class="stats-value">{{ $quantidade }}</span>
+                    </div>
+                @empty
+                    <div class="stats-item">
+                        <span class="stats-label">Sem dados</span>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+        <!-- ESTATÍSTICAS DE SENHAS -->
+        <div class="stats-section">
+            <!-- STATUS DAS SENHAS -->
+            <div class="stats-box">
+                <div class="stats-box-title">🎫 Status das Senhas</div>
+                @forelse($senhaStatus as $status => $quantidade)
+                    <div class="stats-item">
+                        <span class="stats-label">{{ ucfirst(str_replace('_', ' ', $status)) }}</span>
+                        <span class="stats-value">{{ $quantidade }}</span>
+                    </div>
+                @empty
+                    <div class="stats-item">
+                        <span class="stats-label">Sem senhas</span>
+                    </div>
+                @endforelse
+            </div>
+
+            <!-- RESUMO GERAL -->
+            <div class="stats-box">
+                <div class="stats-box-title">📊 Resumo Geral</div>
                 <div class="stats-item">
-                    <span class="stats-label">Vaqueiros Disponíveis</span>
-                    <span class="stats-value">{{ $disponiveis }}</span>
+                    <span class="stats-label">Total de Inscrições</span>
+                    <span class="stats-value">{{ $totalInscricoes }}</span>
                 </div>
                 <div class="stats-item">
-                    <span class="stats-label">Vaqueiros Indisponíveis</span>
-                    <span class="stats-value">{{ $indisponíveis }}</span>
+                    <span class="stats-label">Total de Senhas</span>
+                    <span class="stats-value">{{ $totalSenhas }}</span>
                 </div>
                 <div class="stats-item">
-                    <span class="stats-label">Percentual de Ocupação</span>
-                    <span class="stats-value">
-                        @if($totalQuantidade > 0)
-                            {{ number_format(($totalSenhas / $totalQuantidade) * 100, 1) }}%
-                        @else
-                            0%
-                        @endif
-                    </span>
+                    <span class="stats-label">Valor Total</span>
+                    <span class="stats-value">R$ {{ number_format($inscricoes->sum('valor_total'), 2, ',', '.') }}</span>
                 </div>
             </div>
         </div>

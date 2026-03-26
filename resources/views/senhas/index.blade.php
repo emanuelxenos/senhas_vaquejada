@@ -3,16 +3,30 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h1 class="mb-2">Senhas Vendidas</h1>
+        <h1 class="mb-2">Senhas</h1>
         <p class="text-muted mb-0">Total: <strong>{{ $total }}</strong> senhas cadastradas</p>
     </div>
-    <a class="btn btn-secondary" href="{{ route('vaqueiros.index') }}">Voltar</a>
+    <div>
+        <a class="btn btn-primary me-2" href="{{ route('senhas.create') }}">
+            <i class="fas fa-plus"></i> Cadastrar Senhas
+        </a>
+        <a class="btn btn-secondary" href="{{ route('inscricoes.index') }}">Voltar</a>
+    </div>
 </div>
 
 <div class="senhas-grid">
     @foreach($senhas as $senha)
-        <div class="senha-card" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $senha->vaqueiro->nome }}">
-            <div class="senha-number">{{ $senha->numero }}</div>
+        <div class="senha-card" data-bs-toggle="tooltip" data-bs-placement="top"
+             title="Dupla: {{ $senha->inscricao->vaqueiro->nome }} & {{ $senha->inscricao->bateEsteira->nome }}">
+            <div class="senha-number">{{ $senha->numero_senha }}</div>
+            <div class="senha-status">
+                <span class="badge
+                    @if($senha->status == 'correu') bg-success
+                    @elseif($senha->status == 'boi_batido') bg-danger
+                    @else bg-warning @endif">
+                    {{ ucfirst(str_replace('_', ' ', $senha->status)) }}
+                </span>
+            </div>
         </div>
     @endforeach
 </div>
@@ -28,8 +42,9 @@
     .senha-card {
         background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
         border-radius: 8px;
-        padding: 0;
+        padding: 8px;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         min-height: 90px;
@@ -37,6 +52,7 @@
         transition: all 0.3s ease;
         box-shadow: 0 2px 8px rgba(13, 110, 253, 0.15);
         border: 2px solid transparent;
+        position: relative;
     }
 
     .senha-card:hover {
@@ -47,10 +63,15 @@
     }
 
     .senha-number {
-        font-size: 28px;
+        font-size: 24px;
         font-weight: bold;
         color: white;
         text-align: center;
+        margin-bottom: 4px;
+    }
+
+    .senha-status {
+        font-size: 10px;
     }
 
     /* Responsividade */
