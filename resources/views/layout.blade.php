@@ -362,9 +362,15 @@
                         </a>
                     </li>
                     <li class="menu-item">
-                        <a href="{{ route('vaqueiros.index') }}" class="menu-link {{ request()->routeIs('vaqueiros*') ? 'active' : '' }}">
+                        <a href="{{ route('competidores.index') }}" class="menu-link {{ request()->routeIs('competidores*') ? 'active' : '' }}">
                             <i class="fas fa-users menu-icon"></i>
-                            <span class="menu-label">Vaqueiros</span>
+                            <span class="menu-label">Competidores</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ route('inscricoes.index') }}" class="menu-link {{ request()->routeIs('inscricoes*') ? 'active' : '' }}">
+                            <i class="fas fa-clipboard-list menu-icon"></i>
+                            <span class="menu-label">Inscrições</span>
                         </a>
                     </li>
                     <li class="menu-item">

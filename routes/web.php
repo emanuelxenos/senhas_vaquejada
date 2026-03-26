@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\VaqueiroController;
+use App\Http\Controllers\CompetidorController;
+use App\Http\Controllers\InscricaoController;
+use App\Http\Controllers\SenhaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\SettingController;
@@ -20,19 +22,33 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 // Rotas protegidas (requerem autenticação)
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/vaqueiros', [VaqueiroController::class, 'index'])->name('vaqueiros.index');
-    Route::get('/vaqueiros/create', [VaqueiroController::class, 'create'])->name('vaqueiros.create');
-    Route::post('/vaqueiros', [VaqueiroController::class, 'store'])->name('vaqueiros.store');
-    Route::get('/vaqueiros/{vaqueiro}/edit', [VaqueiroController::class, 'edit'])->name('vaqueiros.edit');
-    Route::put('/vaqueiros/{vaqueiro}', [VaqueiroController::class, 'update'])->name('vaqueiros.update');
-    Route::delete('/vaqueiros/{vaqueiro}', [VaqueiroController::class, 'destroy'])->name('vaqueiros.destroy');
 
-    Route::get('/senhas', [VaqueiroController::class, 'listarSenhas'])->name('senhas.index');
-    Route::get('/senhas/create', [VaqueiroController::class, 'cadastrarSenhaForm'])->name('senhas.create');
-    Route::post('/senhas', [VaqueiroController::class, 'storeSenhas'])->name('senhas.store');
+    // Competidores
+    Route::get('/competidores', [CompetidorController::class, 'index'])->name('competidores.index');
+    Route::get('/competidores/create', [CompetidorController::class, 'create'])->name('competidores.create');
+    Route::post('/competidores', [CompetidorController::class, 'store'])->name('competidores.store');
+    Route::get('/competidores/{competidor}/edit', [CompetidorController::class, 'edit'])->name('competidores.edit');
+    Route::put('/competidores/{competidor}', [CompetidorController::class, 'update'])->name('competidores.update');
+    Route::delete('/competidores/{competidor}', [CompetidorController::class, 'destroy'])->name('competidores.destroy');
 
-    Route::get('/vaqueiros/{vaqueiro}/pdf', [VaqueiroController::class, 'gerarPdf'])->name('vaqueiros.pdf');
-    Route::get('/relatorio', [VaqueiroController::class, 'relatorio'])->name('relatorio');
+    // Inscrições
+    Route::get('/inscricoes', [InscricaoController::class, 'index'])->name('inscricoes.index');
+    Route::get('/inscricoes/create', [InscricaoController::class, 'create'])->name('inscricoes.create');
+    Route::post('/inscricoes', [InscricaoController::class, 'store'])->name('inscricoes.store');
+    Route::get('/inscricoes/{inscricao}/edit', [InscricaoController::class, 'edit'])->name('inscricoes.edit');
+    Route::put('/inscricoes/{inscricao}', [InscricaoController::class, 'update'])->name('inscricoes.update');
+    Route::delete('/inscricoes/{inscricao}', [InscricaoController::class, 'destroy'])->name('inscricoes.destroy');
+
+    // Senhas
+    Route::get('/senhas', [SenhaController::class, 'index'])->name('senhas.index');
+    Route::get('/senhas/create', [SenhaController::class, 'create'])->name('senhas.create');
+    Route::post('/senhas', [SenhaController::class, 'store'])->name('senhas.store');
+    Route::get('/senhas/{senha}/edit', [SenhaController::class, 'edit'])->name('senhas.edit');
+    Route::put('/senhas/{senha}', [SenhaController::class, 'update'])->name('senhas.update');
+    Route::delete('/senhas/{senha}', [SenhaController::class, 'destroy'])->name('senhas.destroy');
+
+    Route::get('/inscricoes/{inscricao}/pdf', [SenhaController::class, 'gerarPdf'])->name('inscricoes.pdf');
+    Route::get('/relatorio', [SenhaController::class, 'relatorio'])->name('relatorio');
 
     // Configurações do sistema
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
