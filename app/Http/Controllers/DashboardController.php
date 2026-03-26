@@ -18,12 +18,6 @@ class DashboardController extends Controller
         // Dados para gráfico: distribuição de pagamentos (por inscrição)
         $pagamentos = Inscricao::selectRaw('forma_pagamento, COUNT(*) as total')
             ->groupBy('forma_pagamento')
-            ->pluck('total', 'pagamento')
-            ->toArray();
-
-        // Ajuste: chaves do gráfico devem bater com a coluna do select
-        $pagamentos = Inscricao::selectRaw('forma_pagamento, COUNT(*) as total')
-            ->groupBy('forma_pagamento')
             ->pluck('total', 'forma_pagamento')
             ->toArray();
 
