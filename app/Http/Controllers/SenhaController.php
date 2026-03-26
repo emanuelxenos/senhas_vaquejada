@@ -89,11 +89,14 @@ class SenhaController extends Controller
     public function update(Request $request, Senha $senha)
     {
         $data = $request->validate([
-            'numero_senha' => 'required|string|max:50|unique:senhas,numero_senha,' . $senha->id,
+            // No popup vamos enviar apenas `status`.
+            // Se futuramente quiser editar número, pode enviar `numero_senha` também.
+            'numero_senha' => 'sometimes|required|string|max:50|unique:senhas,numero_senha,' . $senha->id,
             'status' => 'required|in:pendente,correu,boi_batido',
         ]);
 
-        $senha->update($data);
+        $senha->fill($data);
+        $senha->save();
 
         return redirect()->route('senhas.index')->with('sucesso', 'Senha atualizada com sucesso.');
     }
