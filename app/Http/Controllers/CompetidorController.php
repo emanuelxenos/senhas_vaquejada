@@ -7,10 +7,24 @@ use Illuminate\Http\Request;
 
 class CompetidorController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $competidores = Competidor::orderBy('nome')->get();
-        return view('competidores.index', compact('competidores'));
+        $search = trim((string) $request->query('q', ''));
+
+        $competidores = Competidor::query()
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($subQuery) use ($search) {
+                    $subQuery->where('nome', 'like', "%{$search}%")
+                        ->orWhere('cpf', 'like', "%{$search}%")
+                        ->orWhere('cidade', 'like', "%{$search}%")
+                        ->orWhere('representacao', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('nome')
+            ->paginate(15)
+            ->withQueryString();
+
+        return view('competidores.index', compact('competidores', 'search'));
     }
 
     public function create()

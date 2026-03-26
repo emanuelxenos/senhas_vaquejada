@@ -13,6 +13,26 @@
 
 <div class="card">
     <div class="card-body">
+        <form method="GET" action="{{ route('competidores.index') }}" class="row g-2 mb-3">
+            <div class="col-md-8">
+                <input
+                    type="text"
+                    name="q"
+                    class="form-control"
+                    placeholder="Pesquisar por nome, CPF, cidade ou representação..."
+                    value="{{ $search ?? '' }}"
+                >
+            </div>
+            <div class="col-md-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Pesquisar
+                </button>
+                @if(!empty($search))
+                    <a href="{{ route('competidores.index') }}" class="btn btn-outline-secondary">Limpar</a>
+                @endif
+            </div>
+        </form>
+
         <div class="table-responsive">
             <table class="table table-hover">
                 <thead class="table-light">
@@ -53,13 +73,23 @@
                             <td colspan="6" class="text-center text-muted py-4">
                                 <i class="fas fa-users fa-2x mb-2"></i>
                                 <br>
-                                Nenhum competidor cadastrado ainda.
+                                @if(!empty($search))
+                                    Nenhum competidor encontrado para "{{ $search }}".
+                                @else
+                                    Nenhum competidor cadastrado ainda.
+                                @endif
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
+
+        @if($competidores->hasPages())
+            <div class="d-flex justify-content-center mt-3">
+                {{ $competidores->links() }}
+            </div>
+        @endif
     </div>
 </div>
 @endsection
