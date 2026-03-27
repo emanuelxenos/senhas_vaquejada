@@ -95,11 +95,17 @@ class SenhaController extends Controller
     public function update(Request $request, Senha $senha)
     {
         $data = $request->validate([
-            // No popup vamos enviar apenas `status`.
-            // Se futuramente quiser editar número, pode enviar `numero_senha` também.
             'numero_senha' => 'sometimes|required|string|max:50|unique:senhas,numero_senha,' . $senha->id,
-            'status' => 'required|in:pendente,correu,boi_batido',
+            'status' => 'required|in:pendente,correu,boi_batido,cancelado',
+            'motivo_cancelamento' => 'required_if:status,cancelado|nullable|string',
         ]);
+
+        if ($data['status'] === 'cancelado') {
+            $data['cancelado_por'] = auth()->check() ? auth()->user()->name : 'Usuário';
+        } else {
+            $data['cancelado_por'] = null;
+            $data['motivo_cancelamento'] = null;
+        }
 
         $senha->fill($data);
         $senha->save();

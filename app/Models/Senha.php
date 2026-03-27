@@ -11,6 +11,8 @@ class Senha extends Model
         'inscricao_id',
         'numero_senha',
         'status',
+        'motivo_cancelamento',
+        'cancelado_por',
     ];
 
     protected $casts = [
