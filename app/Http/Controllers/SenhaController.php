@@ -6,6 +6,7 @@ use App\Models\Inscricao;
 use App\Models\Senha;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use PDF;
 
 class SenhaController extends Controller
@@ -30,6 +31,7 @@ class SenhaController extends Controller
 
     public function create()
     {
+        Gate::authorize('manage-cadastros');
         $inscricoes = Inscricao::with(['vaqueiro', 'bateEsteira'])
             ->withCount('senhas')
             // MySQL não permite usar coluna não agregada em HAVING sem GROUP BY.
@@ -44,6 +46,7 @@ class SenhaController extends Controller
 
     public function store(Request $request)
     {
+        Gate::authorize('manage-cadastros');
         $request->validate([
             'inscricao_id' => 'required|exists:inscricoes,id',
             'senhas' => 'required|array|min:1',
@@ -91,11 +94,13 @@ class SenhaController extends Controller
 
     public function edit(Senha $senha)
     {
+        Gate::authorize('manage-cadastros');
         return view('senhas.edit', compact('senha'));
     }
 
     public function update(Request $request, Senha $senha)
     {
+        Gate::authorize('manage-cadastros');
         $data = $request->validate([
             'numero_senha' => 'sometimes|required|string|max:50|unique:senhas,numero_senha,' . $senha->id,
             'status' => 'required|in:pendente,correu,boi_batido,cancelado',
@@ -117,6 +122,7 @@ class SenhaController extends Controller
 
     public function destroy(Senha $senha)
     {
+        Gate::authorize('manage-cadastros');
         $senha->delete();
         return redirect()->route('senhas.index')->with('sucesso', 'Senha excluída com sucesso.');
     }
@@ -133,6 +139,7 @@ class SenhaController extends Controller
 
     public function relatorio()
     {
+        Gate::authorize('view-reports');
         // Buscar inscrições com contagem de senhas (ignorando canceladas)
         $inscricoes = Inscricao::with(['vaqueiro', 'bateEsteira', 'senhas' => function($query) {
                 $query->where('status', '!=', 'cancelado');

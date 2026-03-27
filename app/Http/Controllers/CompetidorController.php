@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Competidor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class CompetidorController extends Controller
 {
@@ -29,11 +30,13 @@ class CompetidorController extends Controller
 
     public function create()
     {
+        Gate::authorize('manage-cadastros');
         return view('competidores.create');
     }
 
     public function store(Request $request)
     {
+        Gate::authorize('manage-cadastros');
         $data = $request->validate([
             'nome' => 'required|string|max:255',
             'cpf' => 'required|string|max:14|unique:competidores,cpf',
@@ -48,11 +51,13 @@ class CompetidorController extends Controller
 
     public function edit(Competidor $competidor)
     {
+        Gate::authorize('manage-cadastros');
         return view('competidores.edit', compact('competidor'));
     }
 
     public function update(Request $request, Competidor $competidor)
     {
+        Gate::authorize('manage-cadastros');
         $data = $request->validate([
             'nome' => 'required|string|max:255',
             'cpf' => 'required|string|max:14|unique:competidores,cpf,' . $competidor->id,
@@ -67,6 +72,7 @@ class CompetidorController extends Controller
 
     public function destroy(Competidor $competidor)
     {
+        Gate::authorize('manage-cadastros');
         $competidor->delete();
         return redirect()->route('competidores.index')->with('sucesso', 'Competidor excluído com sucesso.');
     }

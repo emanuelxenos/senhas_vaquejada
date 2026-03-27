@@ -412,25 +412,32 @@
             </div>
 
             <!-- AÇÕES -->
+            @canany(['manage-cadastros', 'view-reports'])
             <div class="menu-section">
                 <div class="menu-section-title">Ações</div>
                 <ul style="list-style: none; padding: 0; margin: 0;">
+                    @can('manage-cadastros')
                     <li class="menu-item">
                         <a href="{{ route('senhas.create') }}" class="menu-link">
                             <i class="fas fa-plus-circle menu-icon"></i>
                             <span class="menu-label">Cadastrar Senhas</span>
                         </a>
                     </li>
+                    @endcan
+                    @can('view-reports')
                     <li class="menu-item">
                         <a href="{{ route('relatorio') }}" class="menu-link">
                             <i class="fas fa-file-pdf menu-icon"></i>
                             <span class="menu-label">Relatório</span>
                         </a>
                     </li>
+                    @endcan
                 </ul>
             </div>
+            @endcanany
 
             <!-- CONFIGURAÇÕES -->
+            @can('manage-settings')
             <div class="menu-section">
                 <div class="menu-section-title">Configuração</div>
                 <ul style="list-style: none; padding: 0; margin: 0;">
@@ -442,31 +449,9 @@
                     </li>
                 </ul>
             </div>
+            @endcan
 
-            <!-- PARA O FUTURO -->
-            <div class="menu-section" style="opacity: 0.5;">
-                <div class="menu-section-title">Em Breve</div>
-                <ul style="list-style: none; padding: 0; margin: 0;">
-                    <li class="menu-item">
-                        <a href="#" class="menu-link" onclick="return false;">
-                            <i class="fas fa-credit-card menu-icon"></i>
-                            <span class="menu-label">Pagamentos</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="#" class="menu-link" onclick="return false;">
-                            <i class="fas fa-chart-bar menu-icon"></i>
-                            <span class="menu-label">Análises</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="#" class="menu-link" onclick="return false;">
-                            <i class="fas fa-cog menu-icon"></i>
-                            <span class="menu-label">Configurações</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
+
 
             <!-- LOGOUT - Fixed at bottom -->
             <div class="logout-section" style="margin-top: auto;">
@@ -492,7 +477,7 @@
         <div class="topbar-user">
             <div class="user-info">
                 <div class="user-name">{{ Auth::user()->name }}</div>
-                <div class="user-role">Administrador</div>
+                <div class="user-role">{{ ucfirst(Auth::user()->role ?? 'Admin') }}</div>
             </div>
             <div class="user-avatar">{{ substr(Auth::user()->name, 0, 1) }}</div>
         </div>

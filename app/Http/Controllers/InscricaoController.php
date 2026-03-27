@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Competidor;
 use App\Models\Inscricao;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class InscricaoController extends Controller
 {
@@ -36,12 +37,14 @@ class InscricaoController extends Controller
 
     public function create()
     {
+        Gate::authorize('manage-cadastros');
         $competidores = Competidor::orderBy('nome')->get();
         return view('inscricoes.create', compact('competidores'));
     }
 
     public function store(Request $request)
     {
+        Gate::authorize('manage-cadastros');
         $data = $request->validate([
             'vaqueiro_id' => 'required|exists:competidores,id',
             'bate_esteira_id' => 'required|exists:competidores,id|different:vaqueiro_id',
@@ -58,12 +61,14 @@ class InscricaoController extends Controller
 
     public function edit(Inscricao $inscricao)
     {
+        Gate::authorize('manage-cadastros');
         $competidores = Competidor::orderBy('nome')->get();
         return view('inscricoes.edit', compact('inscricao', 'competidores'));
     }
 
     public function update(Request $request, Inscricao $inscricao)
     {
+        Gate::authorize('manage-cadastros');
         $data = $request->validate([
             'vaqueiro_id' => 'required|exists:competidores,id',
             'bate_esteira_id' => 'required|exists:competidores,id|different:vaqueiro_id',
@@ -80,6 +85,7 @@ class InscricaoController extends Controller
 
     public function destroy(Inscricao $inscricao)
     {
+        Gate::authorize('manage-cadastros');
         $inscricao->delete();
         return redirect()->route('inscricoes.index')->with('sucesso', 'Inscrição excluída com sucesso.');
     }

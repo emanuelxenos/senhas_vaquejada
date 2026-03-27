@@ -6,9 +6,11 @@
         <h1 class="mb-2">Inscrições</h1>
         <p class="text-muted mb-0">Gerencie as inscrições e pacotes comprados</p>
     </div>
+    @can('manage-cadastros')
     <a class="btn btn-primary" href="{{ route('inscricoes.create') }}">
         <i class="fas fa-plus"></i> Nova Inscrição
     </a>
+    @endcan
 </div>
 
 <div class="card">
@@ -69,14 +71,17 @@
                             <td>{{ $inscricao->created_at->format('d/m/Y') }}</td>
                             <td>
                                 <div class="btn-group" role="group">
+                                    @can('manage-cadastros')
                                     <a href="{{ route('inscricoes.edit', $inscricao) }}" class="btn btn-sm btn-outline-primary" title="Editar">
                                         <i class="fas fa-edit"></i>
                                     </a>
+                                    @endcan
                                     @if($inscricao->senhas->count() > 0)
                                         <a href="{{ route('inscricoes.pdf', $inscricao) }}" target="_blank" class="btn btn-sm btn-outline-secondary" title="PDF">
                                             <i class="fas fa-file-pdf"></i>
                                         </a>
                                     @endif
+                                    @can('manage-cadastros')
                                     <form action="{{ route('inscricoes.destroy', $inscricao) }}" method="POST" style="display:inline-block;">
                                         @csrf
                                         @method('DELETE')
@@ -84,6 +89,7 @@
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
+                                    @endcan>
                                 </div>
                             </td>
                         </tr>

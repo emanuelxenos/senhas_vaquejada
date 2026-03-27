@@ -86,6 +86,19 @@
         </div>
 
         <div class="mb-3">
+            <label for="role" class="form-label">Nível de Acesso</label>
+            <select class="form-select @error('role') is-invalid @enderror" id="role" name="role" required>
+                <option value="" disabled selected>Selecione um perfil...</option>
+                <option value="locutor" {{ old('role') == 'locutor' ? 'selected' : '' }}>Locutor (Somente visualização)</option>
+                <option value="secretario" {{ old('role') == 'secretario' ? 'selected' : '' }}>Secretário (Acesso a cadastros)</option>
+                <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Administrador (Acesso total)</option>
+            </select>
+            @error('role')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="mb-3">
             <label for="password" class="form-label">Senha</label>
             <input type="password" class="form-control @error('password') is-invalid @enderror" 
                    id="password" name="password" required>

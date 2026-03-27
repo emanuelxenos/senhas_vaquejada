@@ -6,9 +6,11 @@
         <h1 class="mb-2">Competidores</h1>
         <p class="text-muted mb-0">Gerencie os competidores cadastrados no sistema</p>
     </div>
+    @can('manage-cadastros')
     <a class="btn btn-primary" href="{{ route('competidores.create') }}">
         <i class="fas fa-plus"></i> Novo Competidor
     </a>
+    @endcan
 </div>
 
 <div class="card">
@@ -42,7 +44,9 @@
                         <th>Cidade</th>
                         <th>Representação</th>
                         <th>Cadastrado em</th>
+                        @can('manage-cadastros')
                         <th width="150">Ações</th>
+                        @endcan
                     </tr>
                 </thead>
                 <tbody>
@@ -53,6 +57,7 @@
                             <td>{{ $competidor->cidade }}</td>
                             <td>{{ $competidor->representacao }}</td>
                             <td>{{ $competidor->created_at->format('d/m/Y') }}</td>
+                            @can('manage-cadastros')
                             <td>
                                 <div class="btn-group" role="group">
                                     <a href="{{ route('competidores.edit', $competidor) }}" class="btn btn-sm btn-outline-primary">
@@ -67,10 +72,11 @@
                                     </form>
                                 </div>
                             </td>
+                            @endcan
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-4">
+                            <td colspan="{{ auth()->user()->can('manage-cadastros') ? 6 : 5 }}" class="text-center text-muted py-4">
                                 <i class="fas fa-users fa-2x mb-2"></i>
                                 <br>
                                 @if(!empty($search))

@@ -5,13 +5,17 @@
     <div>
         <h1 class="mb-2">Senhas</h1>
         <p class="text-muted mb-0">Total: <strong>{{ $total }}</strong> senhas exibidas</p>
+        @can('manage-cadastros')
         <p class="text-muted small mb-0">Clique em uma senha para alterar o status.</p>
+        @endcan
     </div>
     <div class="d-flex flex-column align-items-end gap-3">
         <div>
+            @can('manage-cadastros')
             <a class="btn btn-primary me-2" href="{{ route('senhas.create') }}">
                 <i class="fas fa-plus"></i> Cadastrar Senhas
             </a>
+            @endcan
             <a class="btn btn-secondary" href="{{ route('inscricoes.index') }}">Voltar</a>
         </div>
         
@@ -223,6 +227,7 @@
             modal.show();
         }
 
+        @can('manage-cadastros')
         document.querySelectorAll('.senha-card').forEach(card => {
             card.addEventListener('click', () => openModalFromCard(card));
             card.addEventListener('keydown', (e) => {
@@ -232,6 +237,7 @@
                 }
             });
         });
+        @endcan
     });
 </script>
 @endsection
