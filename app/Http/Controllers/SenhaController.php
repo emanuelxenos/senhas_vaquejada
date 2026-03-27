@@ -18,6 +18,8 @@ class SenhaController extends Controller
 
         if ($statusFiltro && $statusFiltro !== 'todos') {
             $query->where('status', $statusFiltro);
+        } else {
+            $query->where('status', '!=', 'cancelado');
         }
 
         $senhas = $query->orderBy('numero_senha')->get();
