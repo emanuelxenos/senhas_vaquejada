@@ -447,6 +447,12 @@
                             <span class="menu-label">Configurações</span>
                         </a>
                     </li>
+                    <li class="menu-item">
+                        <a href="{{ route('users.index') }}" class="menu-link {{ request()->routeIs('users*') ? 'active' : '' }}">
+                            <i class="fas fa-users-cog menu-icon"></i>
+                            <span class="menu-label">Usuários</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
             @endcan

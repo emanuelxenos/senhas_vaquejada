@@ -8,6 +8,7 @@ use App\Http\Controllers\SenhaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\UserController;
 
 // Rota home (redirecionador)
 Route::get('/', [RedirectController::class, 'index']);
@@ -15,8 +16,7 @@ Route::get('/', [RedirectController::class, 'index']);
 // Rotas de autenticação (públicas)
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login')->middleware('guest');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post')->middleware('guest');
-Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register')->middleware('guest');
-Route::post('/register', [AuthController::class, 'register'])->name('register.post')->middleware('guest');
+// Rotas de registro público desabilitadas (apenas Admin Master pode criar)
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
 // Rotas protegidas (requerem autenticação)
@@ -53,5 +53,8 @@ Route::middleware('auth')->group(function () {
     // Configurações do sistema
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+
+    // Usuários do sistema (Apenas Admin)
+    Route::resource('users', UserController::class)->except(['show']);
 });
 

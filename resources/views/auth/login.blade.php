@@ -94,9 +94,7 @@
         <button type="submit" class="btn btn-primary btn-login w-100">Entrar</button>
     </form>
 
-    <div class="register-link">
-        Não tem uma conta? <a href="{{ route('register') }}">Crie uma aqui</a>
-    </div>
+    <!-- Link de registro removido: apenas Admin Master pode criar contas internas -->
 </div>
 
 <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
