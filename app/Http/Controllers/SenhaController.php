@@ -10,14 +10,20 @@ use PDF;
 
 class SenhaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $senhas = Senha::with('inscricao.vaqueiro', 'inscricao.bateEsteira')
-            ->orderBy('numero_senha')
-            ->get();
+        $statusFiltro = $request->query('status', 'todos');
+
+        $query = Senha::with('inscricao.vaqueiro', 'inscricao.bateEsteira');
+
+        if ($statusFiltro && $statusFiltro !== 'todos') {
+            $query->where('status', $statusFiltro);
+        }
+
+        $senhas = $query->orderBy('numero_senha')->get();
 
         $total = $senhas->count();
-        return view('senhas.index', compact('senhas', 'total'));
+        return view('senhas.index', compact('senhas', 'total', 'statusFiltro'));
     }
 
     public function create()

@@ -8,14 +8,28 @@ use Illuminate\Http\Request;
 
 class InscricaoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $inscricoes = Inscricao::with(['vaqueiro', 'bateEsteira'])
-            ->withCount('senhas')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $search = trim((string) $request->query('q', ''));
 
-        return view('inscricoes.index', compact('inscricoes'));
+        $query = Inscricao::with(['vaqueiro', 'bateEsteira'])
+            ->withCount('senhas');
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('vaqueiro', function ($subQ) use ($search) {
+                    $subQ->where('nome', 'like', "%{$search}%");
+                })->orWhereHas('bateEsteira', function ($subQ) use ($search) {
+                    $subQ->where('nome', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        $inscricoes = $query->orderBy('created_at', 'desc')
+            ->paginate(15)
+            ->withQueryString();
+
+        return view('inscricoes.index', compact('inscricoes', 'search'));
     }
 
     public function create()

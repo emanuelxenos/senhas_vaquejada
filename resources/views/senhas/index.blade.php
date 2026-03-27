@@ -1,17 +1,26 @@
 @extends('layout')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
     <div>
         <h1 class="mb-2">Senhas</h1>
-        <p class="text-muted mb-0">Total: <strong>{{ $total }}</strong> senhas cadastradas</p>
+        <p class="text-muted mb-0">Total: <strong>{{ $total }}</strong> senhas exibidas</p>
         <p class="text-muted small mb-0">Clique em uma senha para alterar o status.</p>
     </div>
-    <div>
-        <a class="btn btn-primary me-2" href="{{ route('senhas.create') }}">
-            <i class="fas fa-plus"></i> Cadastrar Senhas
-        </a>
-        <a class="btn btn-secondary" href="{{ route('inscricoes.index') }}">Voltar</a>
+    <div class="d-flex flex-column align-items-end gap-3">
+        <div>
+            <a class="btn btn-primary me-2" href="{{ route('senhas.create') }}">
+                <i class="fas fa-plus"></i> Cadastrar Senhas
+            </a>
+            <a class="btn btn-secondary" href="{{ route('inscricoes.index') }}">Voltar</a>
+        </div>
+        
+        <div class="btn-group shadow-sm" role="group" aria-label="Filtro de Senhas">
+            <a href="{{ route('senhas.index', ['status' => 'todos']) }}" class="btn {{ ($statusFiltro ?? 'todos') === 'todos' ? 'btn-primary' : 'btn-outline-primary' }}">Todos</a>
+            <a href="{{ route('senhas.index', ['status' => 'pendente']) }}" class="btn {{ ($statusFiltro ?? '') === 'pendente' ? 'btn-warning' : 'btn-outline-warning' }}">Pendente</a>
+            <a href="{{ route('senhas.index', ['status' => 'correu']) }}" class="btn {{ ($statusFiltro ?? '') === 'correu' ? 'btn-secondary' : 'btn-outline-secondary' }}">Correu</a>
+            <a href="{{ route('senhas.index', ['status' => 'boi_batido']) }}" class="btn {{ ($statusFiltro ?? '') === 'boi_batido' ? 'btn-success' : 'btn-outline-success' }}">Boi Batido</a>
+        </div>
     </div>
 </div>
 

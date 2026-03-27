@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Senha Parque Francisco Alves</title>
+    <title>Sistema de senhas de vaquejada</title>
     <style>
         body { font-family: Arial, sans-serif; font-size: 12px; color: #333; }
         .header { text-align: center; font-size: 15px; font-weight: bold; margin-bottom: 10px; color: #0d6efd; }
