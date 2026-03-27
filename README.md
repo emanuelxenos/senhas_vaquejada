@@ -1,59 +1,86 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🐴 Sistema de Gestão de Vaquejada
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Um sistema completo e profissional desenvolvido em **Laravel** para o gerenciamento de inscrições, senhas de corrida e caixa para eventos de Vaquejada. 
 
-## About Laravel
+O sistema foi arquitetado para fornecer relatórios rigorosos, controle anti-fraudes nos caixas e agilidade no momento dos cadastros durante a competição.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🚀 Principais Funcionalidades
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Gestão de Competidores**: Cadastro de vaqueiros com Nome, CPF, Cidade e Representação.
+- **Inscrições de Duplas**: Criação de inscrições vinculando um Vaqueiro a um Bate-esteira.
+- **Controle de Caixas/Pagamentos**: Acompanhamento dinâmico do valor total da inscrição e do status de pagamento (Pago ou Pendente).
+- **Gerenciamento de Senhas**: Emissão de senhas para as corridas.
+  - As senhas acompanham um status dinâmico que dita o ritmo da competição (`Pendente`, `Correu`, `Boi Batido` e `Cancelado`).
+  - **Relatórios Extrativos Anti-fraude**: O sistema exige o motivo e documenta quem cancelou a senha no momento em que alguém aperta o botão 'cancelado', ideal para monitoria de devoluções de dinheiro no caixa.
+- **Relatórios Gerenciais em PDF**:
+  - Emissão de *Senhas de Corrida* (comprovante impressso de cada vaqueiro). Senhas canceladas recebem grandes carimbos visuais de proteção.
+  - *Relatório de Fechamento*: Contagem total de faturamento ignorando senhas invalidadas e estatísticas amplas do andamento do parque.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## 🔐 Perfis de Acesso e Segurança (RBAC)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+O painel de senhas conta com proteção e restrição programática de papéis para garantir a segurança da equipe.
 
-## Laravel Sponsors
+- 👑 **Administrador Master**: Tem acesso total a todos os painéis. Exclui contas antigas, recadastra novos ajudantes pelo *Gerenciamento de Usuários interno*, e visualiza relatórios de caixa.
+- 📝 **Secretário(a)**: Acessa o painel do dia a dia. Cadastra vaqueiros, emite as senhas, aprova os pagamentos e edita inscrições. É automaticamente bloqueado de ver relatórios gerais faturados para manter a privacidade do Parque.
+- 🎙️ **Locutor**: Perfil essencial configurado como *Somente Leitura*. Acompanha em tempo real as inscrições e status das senhas da grande tela para a pista, porém colunas de 'Ações' como alterar botões, editar status, deletar listas ou mesmo adicionar chaves são completamente dizimadas e impedidas de seu acesso para mitigar confusões.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## 🛠️ Tecnologias Utilizadas
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- **Backend / Core**: [Laravel 12.x](https://laravel.com/) (PHP 8+)
+- **Banco de Dados**: [MySQL](https://www.mysql.com/) ORM
+- **Frontend (Painel)**: [Bootstrap 5](https://getbootstrap.com/), Blade Diretives e JavaScript Interativo nativo.
+- **Utilitários e Extensões**: PDF Wrapper (Geração de relatórios com dompdf).
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 📦 Como Instalar e Rodar o Projeto
 
-## Code of Conduct
+1. **Clone o repositório**
+   ```bash
+   git clone https://github.com/emanuelxenos/senhas_vaquejada.git
+   cd senhas_vaquejada
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+2. **Instale as dependências do Ecossistema**
+   ```bash
+   composer install
+   ```
 
-## Security Vulnerabilities
+3. **Configure as Variáveis de Ambiente**
+   Faça uma cópia do arquivo de exemplo `.env.example` para `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+   *E não esqueça de abrir o arquivo `.env` para inserir as credenciais ao seu banco de dados MySQL (nas variáveis `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`).*
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+4. **Gere a Chave Mestra da Aplicação**
+   ```bash
+   php artisan key:generate
+   ```
 
-## License
+5. **Construa as Tabelas e o Primeiro Acesso Oficial (Migration & Seed)**
+   Abra seu servidor de banco de dados e simplesmente use o comando abaixo com a tag `--seed`. O Laravel vai plantar a base de dados zerinha e gerar a sua primeira semente de usuário seguro (o **Admin Master** inagural):
+   ```bash
+   php artisan migrate --seed
+   ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+6. **Inicie o Servidor**
+   ```bash
+   php artisan serve
+   ```
+   **Tudo liso!** A aplicação entrará na pista e estará rodando em tempo real na máquina. Entre nela e acesse o servidor.
+
+### 🔑 Exemplo do Primeiro Login no Sistema Limpo
+- **Email**: `admin@admin.com`
+- **Senha**: `12345678`
+
+*(Recomendamos profundamente logar de primeira na sua aba lateral segura e alterar este seu perfil para os nomes corretos do proprietário).*
+
+---
+✅ **Produzido com extrema rigidez tecnológica para Parques Competidores.**
