@@ -24,11 +24,29 @@
         .linha-fina { border-top: 0.5px solid #000; margin: 10px 0; width: 100%; }
         .linha-fina-bottom { border-bottom: 0.5px solid #000; margin: 10px 0; width: 100%; }
         .comprovante-header { background-color: #0d6efd; color: white; padding: 5px; text-align: center; font-weight: bold; margin-bottom: 10px; }
+        .carimbo-cancelado {
+            position: absolute;
+            top: 105px;
+            left: 10%;
+            width: 80%;
+            color: rgba(200, 0, 0, 0.3);
+            border: 3px solid rgba(200, 0, 0, 0.3);
+            font-size: 50px;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+            padding: 10px;
+            z-index: 100;
+            transform: rotate(-15deg);
+        }
     </style>
 </head>
 <body>
     @foreach($senhas as $senha)
-        <div class="senha-card">
+        <div class="senha-card" style="position: relative;">
+            @if($senha->status === 'cancelado')
+                <div class="carimbo-cancelado">CANCELADO</div>
+            @endif
             <div class="linha-fina"></div>
             <div class="header">{{ config('parque.name') }}</div>
             <div class="date">{{ optional($inscricao->created_at)->format('d/m/Y') ?? now()->format('d/m/Y') }}</div>

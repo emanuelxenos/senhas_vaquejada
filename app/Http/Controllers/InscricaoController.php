@@ -13,7 +13,9 @@ class InscricaoController extends Controller
         $search = trim((string) $request->query('q', ''));
 
         $query = Inscricao::with(['vaqueiro', 'bateEsteira'])
-            ->withCount('senhas');
+            ->withCount(['senhas' => function($q) {
+                $q->where('status', '!=', 'cancelado');
+            }]);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {

@@ -133,9 +133,13 @@ class SenhaController extends Controller
 
     public function relatorio()
     {
-        // Buscar inscrições com contagem de senhas
-        $inscricoes = Inscricao::with(['vaqueiro', 'bateEsteira', 'senhas'])
-            ->withCount('senhas')
+        // Buscar inscrições com contagem de senhas (ignorando canceladas)
+        $inscricoes = Inscricao::with(['vaqueiro', 'bateEsteira', 'senhas' => function($query) {
+                $query->where('status', '!=', 'cancelado');
+            }])
+            ->withCount(['senhas' => function($query) {
+                $query->where('status', '!=', 'cancelado');
+            }])
             ->orderBy('created_at', 'desc')
             ->get();
 
