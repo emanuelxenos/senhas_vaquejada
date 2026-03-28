@@ -426,10 +426,31 @@
                     @endcan
                     @can('view-reports')
                     <li class="menu-item">
-                        <a href="{{ route('relatorio') }}" class="menu-link">
+                        <a href="#submenuRelatorios" data-bs-toggle="collapse" class="menu-link {{ request()->routeIs('relatorios.*') ? '' : 'collapsed' }}" aria-expanded="{{ request()->routeIs('relatorios.*') ? 'true' : 'false' }}">
                             <i class="fas fa-file-pdf menu-icon"></i>
-                            <span class="menu-label">Relatório</span>
+                            <span class="menu-label">Relatórios</span>
+                            <i class="fas fa-chevron-down ms-auto" style="font-size: 0.8rem; transition: transform 0.3s;"></i>
                         </a>
+                        <ul class="collapse list-unstyled {{ request()->routeIs('relatorios.*') ? 'show' : '' }}" id="submenuRelatorios" style="background: rgba(0,0,0,0.15);">
+                            <li class="menu-item">
+                                <a href="{{ route('relatorios.geral') }}" class="menu-link {{ request()->routeIs('relatorios.geral') ? 'active' : '' }}" style="padding-left: 45px; padding-top: 8px; padding-bottom: 8px;">
+                                    <i class="fas fa-chart-pie menu-icon" style="font-size: 14px;"></i>
+                                    <span class="menu-label" style="font-size: 14px;">Geral do Caixa</span>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="{{ route('relatorios.inscricoes') }}" class="menu-link {{ request()->routeIs('relatorios.inscricoes') ? 'active' : '' }}" style="padding-left: 45px; padding-top: 8px; padding-bottom: 8px;">
+                                    <i class="fas fa-file-invoice-dollar menu-icon" style="font-size: 14px;"></i>
+                                    <span class="menu-label" style="font-size: 14px;">Inscrições</span>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="{{ route('relatorios.senhas') }}" class="menu-link {{ request()->routeIs('relatorios.senhas') ? 'active' : '' }}" style="padding-left: 45px; padding-top: 8px; padding-bottom: 8px;">
+                                    <i class="fas fa-ticket-alt menu-icon" style="font-size: 14px;"></i>
+                                    <span class="menu-label" style="font-size: 14px;">Senhas Filtradas</span>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                     @endcan
                 </ul>

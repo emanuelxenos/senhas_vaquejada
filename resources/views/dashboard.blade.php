@@ -99,7 +99,7 @@
                     <a href="{{ route('competidores.create') }}" class="btn btn-outline-primary">Novo Competidor</a>
                     <a href="{{ route('inscricoes.create') }}" class="btn btn-outline-success">Nova Inscrição</a>
                     <a href="{{ route('senhas.create') }}" class="btn btn-outline-success">Nova Senha</a>
-                    <a href="{{ route('relatorio') }}" target="_blank" class="btn btn-outline-info">Gerar Relatório PDF</a>
+                    <a href="{{ route('relatorios.geral') }}" target="_blank" class="btn btn-outline-info">Gerar Relatório Financeiro (PDF)</a>
                 </div>
             </div>
         </div>

@@ -9,6 +9,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RelatorioController;
 
 // Rota home (redirecionador)
 Route::get('/', [RedirectController::class, 'index']);
@@ -48,7 +49,17 @@ Route::middleware('auth')->group(function () {
     Route::delete('/senhas/{senha}', [SenhaController::class, 'destroy'])->name('senhas.destroy');
 
     Route::get('/inscricoes/{inscricao}/pdf', [SenhaController::class, 'gerarPdf'])->name('inscricoes.pdf');
-    Route::get('/relatorio', [SenhaController::class, 'relatorio'])->name('relatorio');
+
+    // Central de Relatórios
+    Route::prefix('relatorios')->name('relatorios.')->group(function () {
+        Route::get('/geral', [RelatorioController::class, 'geral'])->name('geral');
+        
+        Route::get('/inscricoes', [RelatorioController::class, 'inscricoesForm'])->name('inscricoes');
+        Route::post('/inscricoes/pdf', [RelatorioController::class, 'inscricoesPdf'])->name('inscricoes.pdf');
+        
+        Route::get('/senhas', [RelatorioController::class, 'senhasForm'])->name('senhas');
+        Route::post('/senhas/pdf', [RelatorioController::class, 'senhasPdf'])->name('senhas.pdf');
+    });
 
     // Configurações do sistema
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
