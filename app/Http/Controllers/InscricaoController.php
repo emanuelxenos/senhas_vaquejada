@@ -90,6 +90,14 @@ class InscricaoController extends Controller
         return view('inscricoes.pagamento', compact('inscricao'));
     }
 
+    public function reciboTermico(Inscricao $inscricao)
+    {
+        Gate::authorize('manage-cadastros');
+        $inscricao->load(['vaqueiro', 'bateEsteira', 'senhas']);
+        
+        return view('inscricoes.termica', compact('inscricao'));
+    }
+
     public function checarStatus(Request $request, Inscricao $inscricao)
     {
         Gate::authorize('manage-cadastros');

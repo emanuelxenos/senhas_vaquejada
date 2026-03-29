@@ -100,10 +100,17 @@
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-between">
-                        <a href="{{ route('inscricoes.index') }}" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Voltar
-                        </a>
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <div>
+                            <a href="{{ route('inscricoes.index') }}" class="btn btn-secondary me-2">
+                                <i class="fas fa-arrow-left"></i> Voltar
+                            </a>
+                            @if($inscricao->senhas->count() > 0)
+                                <a href="{{ route('inscricoes.termica', $inscricao) }}" target="_blank" class="btn btn-dark">
+                                    <i class="fas fa-print"></i> Reimprimir Térmica
+                                </a>
+                            @endif
+                        </div>
                         <button type="submit" class="btn btn-success">
                             <i class="fas fa-save"></i> Salvar Alterações
                         </button>

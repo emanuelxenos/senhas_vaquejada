@@ -90,7 +90,10 @@
                                         </form>
                                     @endif
                                     @if($inscricao->senhas->count() > 0)
-                                        <a href="{{ route('inscricoes.pdf', $inscricao) }}" target="_blank" class="btn btn-sm btn-outline-secondary" title="PDF">
+                                        <a href="{{ route('inscricoes.termica', $inscricao) }}" target="_blank" class="btn btn-sm btn-outline-dark" title="Cupom Térmico">
+                                            <i class="fas fa-print"></i>
+                                        </a>
+                                        <a href="{{ route('inscricoes.pdf', $inscricao) }}" target="_blank" class="btn btn-sm btn-outline-secondary" title="PDF A4">
                                             <i class="fas fa-file-pdf"></i>
                                         </a>
                                     @endif
