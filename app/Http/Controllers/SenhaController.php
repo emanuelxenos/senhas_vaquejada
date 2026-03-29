@@ -80,10 +80,19 @@ class SenhaController extends Controller
                 ->withInput();
         }
 
-        // Validar conteúdo/uniqueness depois de filtrar vazios
+        // Validar conteúdo/uniqueness depois de filtrar vazios. Ignorar as canceladas.
         validator(
             ['senhas' => $senhas],
-            ['senhas' => 'required|array|min:1', 'senhas.*' => 'required|string|max:50|distinct|unique:senhas,numero_senha']
+            [
+                'senhas' => 'required|array|min:1', 
+                'senhas.*' => [
+                    'required',
+                    'string',
+                    'max:50',
+                    'distinct',
+                    \Illuminate\Validation\Rule::unique('senhas', 'numero_senha')->whereNot('status', 'cancelado')
+                ]
+            ]
         )->validate();
 
         foreach ($senhas as $numero) {
@@ -108,7 +117,12 @@ class SenhaController extends Controller
         Gate::authorize('update-status'); // nova regra que permite locutor
 
         $data = $request->validate([
-            'numero_senha' => 'sometimes|required|string|max:50|unique:senhas,numero_senha,' . $senha->id,
+            'numero_senha' => [
+                'sometimes', 'required', 'string', 'max:50',
+                \Illuminate\Validation\Rule::unique('senhas', 'numero_senha')
+                    ->ignore($senha->id)
+                    ->whereNot('status', 'cancelado')
+            ],
             'status' => 'required|in:pendente,correu,boi_batido,cancelado',
             'motivo_cancelamento' => 'required_if:status,cancelado|nullable|string',
         ]);

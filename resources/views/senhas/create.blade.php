@@ -21,7 +21,7 @@
                         <select id="inscricao_id" name="inscricao_id" class="form-select @error('inscricao_id') is-invalid @enderror" required>
                             <option value="">Selecione uma inscrição...</option>
                             @foreach($inscricoes as $inscricao)
-                                <option value="{{ $inscricao->id }}">
+                                <option value="{{ $inscricao->id }}" {{ old('inscricao_id') == $inscricao->id ? 'selected' : '' }}>
                                     {{ $inscricao->vaqueiro->nome }} & {{ $inscricao->bateEsteira->nome }}
                                     ({{ $inscricao->senhas_count ?? 0 }}/{{ $inscricao->quantidade_senhas ?? 0 }} cadastradas)
                                 </option>
@@ -36,9 +36,15 @@
                         <p class="text-muted">Selecione uma inscrição para ver os campos de senhas.</p>
                     </div>
 
-                    @error('senhas')
-                        <div class="alert alert-danger">{{ $message }}</div>
-                    @enderror
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('senhas.index') }}" class="btn btn-secondary">
@@ -139,5 +145,9 @@
             campo.innerHTML = '<p class="text-muted">Selecione uma inscrição para ver os campos de senhas.</p>';
         }
     });
+
+    if (select.value) {
+        select.dispatchEvent(new Event('change'));
+    }
 </script>
 @endsection
