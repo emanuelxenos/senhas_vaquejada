@@ -35,6 +35,10 @@ class AppServiceProvider extends ServiceProvider
             return $user->isAdmin() || $user->isSecretario();
         });
 
+        Gate::define('update-status', function (User $user) {
+            return $user->isAdmin() || $user->isSecretario() || $user->isLocutor();
+        });
+
         if (Schema::hasTable('settings')) {
             $defaults = config('parque');
 

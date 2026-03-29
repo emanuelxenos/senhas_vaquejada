@@ -5,7 +5,7 @@
     <div>
         <h1 class="mb-2">Senhas</h1>
         <p class="text-muted mb-0">Total: <strong>{{ $total }}</strong> senhas exibidas</p>
-        @can('manage-cadastros')
+        @can('update-status')
         <p class="text-muted small mb-0">Clique em uma senha para alterar o status.</p>
         @endcan
     </div>
@@ -80,7 +80,9 @@
                         <option value="pendente">Pendente</option>
                         <option value="correu">Correu</option>
                         <option value="boi_batido">Boi batido</option>
-                        <option value="cancelado">Cancelado</option>
+                        @if(!auth()->user()->isLocutor())
+                            <option value="cancelado">Cancelado</option>
+                        @endif
                     </select>
 
                     <div id="motivoCancelamentoContainer" class="mt-3" style="display: none;">
@@ -227,7 +229,7 @@
             modal.show();
         }
 
-        @can('manage-cadastros')
+        @can('update-status')
         document.querySelectorAll('.senha-card').forEach(card => {
             card.addEventListener('click', () => openModalFromCard(card));
             card.addEventListener('keydown', (e) => {

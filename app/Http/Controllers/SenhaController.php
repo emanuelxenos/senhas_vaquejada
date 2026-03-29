@@ -41,7 +41,12 @@ class SenhaController extends Controller
             )
             ->get();
 
-        return view('senhas.create', compact('inscricoes'));
+        $senhasVendidas = Senha::where('status', '!=', 'cancelado')
+            ->orderByRaw('CAST(numero_senha AS UNSIGNED) ASC') // Ordenação numérica inteligente
+            ->pluck('numero_senha')
+            ->toArray();
+
+        return view('senhas.create', compact('inscricoes', 'senhasVendidas'));
     }
 
     public function store(Request $request)
@@ -100,7 +105,8 @@ class SenhaController extends Controller
 
     public function update(Request $request, Senha $senha)
     {
-        Gate::authorize('manage-cadastros');
+        Gate::authorize('update-status'); // nova regra que permite locutor
+
         $data = $request->validate([
             'numero_senha' => 'sometimes|required|string|max:50|unique:senhas,numero_senha,' . $senha->id,
             'status' => 'required|in:pendente,correu,boi_batido,cancelado',
@@ -108,6 +114,9 @@ class SenhaController extends Controller
         ]);
 
         if ($data['status'] === 'cancelado') {
+            if (auth()->check() && auth()->user()->isLocutor()) {
+                abort(403, 'Acesso Negado: Locutores não podem cancelar senhas.');
+            }
             $data['cancelado_por'] = auth()->check() ? auth()->user()->name : 'Usuário';
         } else {
             $data['cancelado_por'] = null;

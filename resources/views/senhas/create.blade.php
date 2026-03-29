@@ -4,10 +4,13 @@
 <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="card">
-            <div class="card-header">
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <h4 class="mb-0">
                     <i class="fas fa-hashtag"></i> Cadastrar Senhas
                 </h4>
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalSenhasVendidas">
+                    <i class="fas fa-eye"></i> Senhas Já Existentes
+                </button>
             </div>
             <div class="card-body">
                 <form method="POST" action="{{ route('senhas.store') }}">
@@ -49,6 +52,36 @@
             </div>
         </div>
     </div>
+</div>
+
+<!-- Modal para exibir senhas já vendidas -->
+<div class="modal fade" id="modalSenhasVendidas" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-light">
+        <h5 class="modal-title"><i class="fas fa-list-ol text-primary"></i> Senhas Ativas no Sistema</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted small mb-3">Estes números já foram atribuídos a alguma inscrição e não devem ser repetidos:</p>
+        @if(count($senhasVendidas) > 0)
+            <div class="d-flex flex-wrap gap-2">
+                @foreach($senhasVendidas as $numSenha)
+                    <span class="badge bg-dark fs-6">{{ $numSenha }}</span>
+                @endforeach
+            </div>
+        @else
+            <div class="text-center text-muted p-4">
+                <i class="fas fa-inbox fa-3x mb-2 opacity-50"></i>
+                <p class="mb-0">Nenhuma senha cadastrada livremente ainda.</p>
+            </div>
+        @endif
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Entendi</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
