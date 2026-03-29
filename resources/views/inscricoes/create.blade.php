@@ -99,6 +99,19 @@
                         </div>
                     </div>
 
+                    <!-- Helper do Caixa -->
+                    <div class="row mb-3 bg-light p-3 rounded mx-1">
+                        <div class="col-md-6 mb-2 mb-md-0">
+                            <label for="valor_recebido" class="form-label text-primary fw-bold"><i class="fas fa-hand-holding-usd"></i> Valor Recebido no Caixa (R$)</label>
+                            <input type="number" id="valor_recebido" class="form-control" placeholder="0,00" step="0.01" min="0">
+                            <small class="text-muted">Apenas visual, ajuda a calcular o troco.</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-success fw-bold"><i class="fas fa-exchange-alt"></i> Troco a devolver</label>
+                            <div class="h3 font-monospace text-success mb-0" id="valor_troco">R$ 0,00</div>
+                        </div>
+                    </div>
+
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('inscricoes.index') }}" class="btn btn-secondary">
                             <i class="fas fa-arrow-left"></i> Voltar
@@ -127,5 +140,59 @@ function validarDupla() {
         document.getElementById('bate_esteira_id').value = '';
     }
 }
+
+// Lógica da Calculadora do Caixa
+const precoSenha = {{ $precoSenha }};
+const inputQtd = document.getElementById('quantidade_senhas');
+const inputTotal = document.getElementById('valor_total');
+const inputRecebido = document.getElementById('valor_recebido');
+const displayTroco = document.getElementById('valor_troco');
+
+let manualTotal = false;
+
+// Evitar que o script sobrescreva se o operador digitar o total manualmente
+inputTotal.addEventListener('input', function() {
+    manualTotal = true;
+    calcularTroco();
+});
+
+// Auto-calcular total ao mudar a quantidade (se o operador não tiver digitado o total manualmente antes)
+inputQtd.addEventListener('input', function() {
+    if (!manualTotal) {
+        let qtd = parseInt(this.value) || 1;
+        inputTotal.value = (qtd * precoSenha).toFixed(2);
+    }
+    calcularTroco();
+});
+
+// Auto-calcular a primeira vez, sem travar edição manual
+window.addEventListener('DOMContentLoaded', () => {
+    if (!inputTotal.value) {
+        inputTotal.value = (parseFloat(inputQtd.value || 1) * precoSenha).toFixed(2);
+    }
+});
+
+function calcularTroco() {
+    const total = parseFloat(inputTotal.value) || 0;
+    const recebido = parseFloat(inputRecebido.value) || 0;
+    
+    if (recebido >= total && total > 0) {
+        const troco = recebido - total;
+        displayTroco.innerHTML = `R$ ${troco.toFixed(2).replace('.', ',')}`;
+        displayTroco.classList.remove('text-danger', 'text-warning');
+        displayTroco.classList.add('text-success');
+    } else if (recebido > 0) {
+        const falta = total - recebido;
+        displayTroco.innerHTML = `Faltam R$ ${falta.toFixed(2).replace('.', ',')}`;
+        displayTroco.classList.remove('text-success', 'text-warning');
+        displayTroco.classList.add('text-danger');
+    } else {
+        displayTroco.innerHTML = `R$ 0,00`;
+        displayTroco.classList.remove('text-danger', 'text-warning');
+        displayTroco.classList.add('text-success');
+    }
+}
+
+inputRecebido.addEventListener('input', calcularTroco);
 </script>
 @endsection

@@ -37,6 +37,13 @@
             @error('parque.contact')<div class="invalid-feedback">{{ $message }}</div>@enderror
         </div>
 
+        <div class="mb-3">
+            <label class="form-label" for="parque-preco-senha">Preço Padrão da Senha (R$)</label>
+            <input id="parque-preco-senha" name="parque[preco_senha]" type="number" step="0.01" min="0" class="form-control @error('parque.preco_senha') is-invalid @enderror" value="{{ old('parque.preco_senha', $config['parque.preco_senha']) }}" required>
+            <small class="text-muted">Este valor será sugerido automaticamente na tela do caixa.</small>
+            @error('parque.preco_senha')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+
         <hr class="my-4">
         <h4>Integração de Pagamento Online</h4>
         <div class="mb-3">

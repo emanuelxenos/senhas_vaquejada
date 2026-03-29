@@ -51,7 +51,8 @@ class InscricaoController extends Controller
     {
         Gate::authorize('manage-cadastros');
         $competidores = Competidor::orderBy('nome')->get();
-        return view('inscricoes.create', compact('competidores'));
+        $precoSenha = \App\Models\Setting::getValue('parque.preco_senha', '100.00');
+        return view('inscricoes.create', compact('competidores', 'precoSenha'));
     }
 
     public function store(Request $request)
@@ -170,7 +171,8 @@ class InscricaoController extends Controller
     {
         Gate::authorize('manage-cadastros');
         $competidores = Competidor::orderBy('nome')->get();
-        return view('inscricoes.edit', compact('inscricao', 'competidores'));
+        $precoSenha = \App\Models\Setting::getValue('parque.preco_senha', '100.00');
+        return view('inscricoes.edit', compact('inscricao', 'competidores', 'precoSenha'));
     }
 
     public function update(Request $request, Inscricao $inscricao)
