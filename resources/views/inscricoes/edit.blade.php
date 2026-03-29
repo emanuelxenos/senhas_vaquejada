@@ -1,6 +1,9 @@
 @extends('layout')
 
 @section('content')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
 <div class="row justify-content-center">
     <div class="col-md-10">
         <div class="card">
@@ -195,5 +198,21 @@ function calcularTroco() {
 }
 
 inputRecebido.addEventListener('input', calcularTroco);
+</script>
+@endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#vaqueiro_id').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Selecione ou pesquise o vaqueiro...'
+        });
+        $('#bate_esteira_id').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Selecione ou pesquise o bate-esteira...'
+        });
+    });
 </script>
 @endsection

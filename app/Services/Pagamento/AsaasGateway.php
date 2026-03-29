@@ -35,7 +35,22 @@ class AsaasGateway implements PaymentGatewayInterface
         // com o nome da dupla (Vaqueiro + Esteira).
         
         $customerName = $inscricao->vaqueiro->nome;
-        $customerCpf = preg_replace('/[^0-9]/', '', $inscricao->vaqueiro->cpf); // Limpar máscara
+        $customerCpf = preg_replace('/[^0-9]/', '', $inscricao->vaqueiro->cpf ?? '');
+
+        $env = Setting::getValue('payment.asaas_env', 'sandbox');
+        
+        if ($env === 'sandbox') {
+            $n = array_map(function() { return rand(0, 9); }, range(1, 9));
+            $d1 = 11 - (($n[0]*10 + $n[1]*9 + $n[2]*8 + $n[3]*7 + $n[4]*6 + $n[5]*5 + $n[6]*4 + $n[7]*3 + $n[8]*2) % 11);
+            $d1 = $d1 >= 10 ? 0 : $d1;
+            $d2 = 11 - (($n[0]*11 + $n[1]*10 + $n[2]*9 + $n[3]*8 + $n[4]*7 + $n[5]*6 + $n[6]*5 + $n[7]*4 + $n[8]*3 + $d1*2) % 11);
+            $d2 = $d2 >= 10 ? 0 : $d2;
+            $customerCpf = implode('', $n) . $d1 . $d2;
+        } else {
+            if (empty($customerCpf) || (strlen($customerCpf) !== 11 && strlen($customerCpf) !== 14)) {
+                throw new Exception("Para gerar cobrança no Asaas (Produção) é necessário um CPF/CNPJ válido do Vaqueiro.");
+            }
+        }
 
         $customerId = $this->getOrCreateCustomer($customerName, $customerCpf);
 
