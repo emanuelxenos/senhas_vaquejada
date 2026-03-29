@@ -13,6 +13,12 @@ interface PaymentGatewayInterface
     public function gerarPix(Inscricao $inscricao, float $valor): array;
 
     /**
+     * Consulta o status da transação em tempo real.
+     * Deve retornar 'pendente', 'pago' ou 'cancelado'.
+     */
+    public function consultarStatus(string $transactionId): string;
+
+    /**
      * (Opcional) Gera uma transação via cartão de crédito.
      */
     public function gerarCartao(Inscricao $inscricao, array $dadosCartao, float $valor): array;

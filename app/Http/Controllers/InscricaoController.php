@@ -90,6 +90,32 @@ class InscricaoController extends Controller
         return view('inscricoes.pagamento', compact('inscricao'));
     }
 
+    public function checarStatus(Request $request, Inscricao $inscricao)
+    {
+        Gate::authorize('manage-cadastros');
+        
+        if ($inscricao->status_pagamento === 'pago') {
+            return response()->json(['status' => 'pago']);
+        }
+        
+        if ($inscricao->gateway_provider === 'asaas' && $inscricao->gateway_transaction_id) {
+            try {
+                $asaas = new AsaasGateway();
+                $novoStatus = $asaas->consultarStatus($inscricao->gateway_transaction_id);
+                
+                if ($novoStatus !== 'pendente') {
+                    $inscricao->update(['status_pagamento' => $novoStatus]);
+                }
+                
+                return response()->json(['status' => $novoStatus]);
+            } catch (\Exception $e) {
+                return response()->json(['status' => 'pendente', 'error' => $e->getMessage()]);
+            }
+        }
+        
+        return response()->json(['status' => $inscricao->status_pagamento]);
+    }
+
     public function gerarPixManual(Inscricao $inscricao)
     {
         Gate::authorize('manage-cadastros');

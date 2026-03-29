@@ -51,7 +51,7 @@
                             <select name="forma_pagamento" id="forma_pagamento" class="form-select @error('forma_pagamento') is-invalid @enderror" required>
                                 <option value="" {{ old('forma_pagamento') == '' ? 'selected' : '' }}>Selecione...</option>
                                 <option value="Dinheiro" {{ old('forma_pagamento') == 'Dinheiro' ? 'selected' : '' }}>Dinheiro</option>
-                                <option value="Pix" {{ old('forma_pagamento') == 'Pix' ? 'selected' : '' }}>Pix Manual</option>
+                                <option value="Pix" {{ old('forma_pagamento') == 'Pix' ? 'selected' : '' }}>Pix</option>
                                 @php $gateway = \App\Models\Setting::getValue('payment.gateway', 'none') @endphp
                                 @if($gateway !== 'none')
                                     <option value="Pix (Gateway)" {{ old('forma_pagamento') == 'Pix (Gateway)' ? 'selected' : '' }} class="fw-bold text-success">Pix Online (Imediato)</option>

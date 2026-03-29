@@ -80,6 +80,26 @@ class AsaasGateway implements PaymentGatewayInterface
         throw new Exception("Integração de cartão com Asaas ainda não implementada.");
     }
 
+    public function consultarStatus(string $transactionId): string
+    {
+        $response = Http::withHeaders([
+            'access_token' => $this->apiKey,
+        ])->get("{$this->baseUrl}/payments/{$transactionId}");
+
+        if ($response->successful()) {
+            $status = $response->json('status');
+            
+            if (in_array($status, ['RECEIVED', 'CONFIRMED'])) {
+                return 'pago';
+            }
+            if (in_array($status, ['OVERDUE', 'REFUNDED', 'DELETED'])) {
+                return 'cancelado';
+            }
+        }
+        
+        return 'pendente';
+    }
+
     /**
      * Cria ou retorna um cliente dummy por nome para receber a cobrança
      */
