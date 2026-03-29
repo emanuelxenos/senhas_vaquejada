@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Competidor;
 use App\Models\Inscricao;
+use App\Models\Setting;
+use App\Services\Pagamento\AsaasGateway;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -54,9 +56,38 @@ class InscricaoController extends Controller
             'status_pagamento' => 'required|in:pendente,pago,cancelado',
         ]);
 
-        Inscricao::create($data);
+        $inscricao = Inscricao::create($data);
+
+        if ($data['forma_pagamento'] === 'Pix (Gateway)' && Setting::getValue('payment.gateway', 'none') === 'asaas') {
+            try {
+                $asaas = new AsaasGateway();
+                $pixData = $asaas->gerarPix($inscricao, (float)$data['valor_total']);
+                
+                $inscricao->update([
+                    'gateway_provider' => 'asaas',
+                    'gateway_transaction_id' => $pixData['transaction_id'],
+                    'gateway_qr_code' => $pixData['qr_code'],
+                    'gateway_qr_code_url' => $pixData['qr_code_url'],
+                ]);
+                
+                return redirect()->route('inscricoes.pagamento', $inscricao->id)
+                                 ->with('sucesso', 'Inscrição criada. Realize o pagamento PIX abaixo.');
+            } catch (\Exception $e) {
+                return redirect()->route('inscricoes.index')->with('error', 'Inscrição criada, mas falha ao gerar PIX online: ' . $e->getMessage());
+            }
+        }
 
         return redirect()->route('inscricoes.index')->with('sucesso', 'Inscrição realizada com sucesso.');
+    }
+
+    public function pagamento(Inscricao $inscricao)
+    {
+        Gate::authorize('manage-cadastros');
+        if (!$inscricao->gateway_qr_code) {
+            return redirect()->route('inscricoes.index')->with('error', 'Esta inscrição não possui uma cobrança PIX automática pendente.');
+        }
+
+        return view('inscricoes.pagamento', compact('inscricao'));
     }
 
     public function edit(Inscricao $inscricao)

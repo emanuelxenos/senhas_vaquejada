@@ -37,6 +37,34 @@
             @error('parque.contact')<div class="invalid-feedback">{{ $message }}</div>@enderror
         </div>
 
+        <hr class="my-4">
+        <h4>Integração de Pagamento Online</h4>
+        <div class="mb-3">
+            <label class="form-label" for="payment-gateway">Gateway Ativo</label>
+            <select id="payment-gateway" name="payment[gateway]" class="form-select @error('payment.gateway') is-invalid @enderror">
+                <option value="none" {{ old('payment.gateway', $config['payment.gateway'] ?? 'none') == 'none' ? 'selected' : '' }}>Nenhum (Apenas modo Offline)</option>
+                <option value="asaas" {{ old('payment.gateway', $config['payment.gateway'] ?? 'none') == 'asaas' ? 'selected' : '' }}>Asaas</option>
+                <option value="pagseguro" {{ old('payment.gateway', $config['payment.gateway'] ?? 'none') == 'pagseguro' ? 'selected' : '' }}>PagSeguro</option>
+            </select>
+            @error('payment.gateway')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="payment-asaas-api-key">Chave de API (Asaas)</label>
+            <input id="payment-asaas-api-key" name="payment[asaas_api_key]" type="text" class="form-control @error('payment.asaas_api_key') is-invalid @enderror" value="{{ old('payment.asaas_api_key', $config['payment.asaas_api_key'] ?? '') }}">
+            <small class="text-muted">Apenas preencha se o Asaas estiver ativo. Uma chave Sandbox ou Produção.</small>
+            @error('payment.asaas_api_key')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="payment-asaas-env">Ambiente do Asaas</label>
+            <select id="payment-asaas-env" name="payment[asaas_env]" class="form-select @error('payment.asaas_env') is-invalid @enderror">
+                <option value="sandbox" {{ old('payment.asaas_env', $config['payment.asaas_env'] ?? 'sandbox') == 'sandbox' ? 'selected' : '' }}>Sandbox (Testes)</option>
+                <option value="production" {{ old('payment.asaas_env', $config['payment.asaas_env'] ?? 'sandbox') == 'production' ? 'selected' : '' }}>Produção (Real)</option>
+            </select>
+            @error('payment.asaas_env')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+
         <button type="submit" class="btn btn-primary">Salvar Configurações</button>
     </form>
 @endsection

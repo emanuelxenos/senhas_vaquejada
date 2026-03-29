@@ -16,6 +16,9 @@ class SettingController extends Controller
             'parque.city' => Setting::getValue('parque.city', config('parque.city')),
             'parque.state' => Setting::getValue('parque.state', config('parque.state')),
             'parque.contact' => Setting::getValue('parque.contact', config('parque.contact')),
+            'payment.gateway' => Setting::getValue('payment.gateway', 'none'),
+            'payment.asaas_api_key' => Setting::getValue('payment.asaas_api_key', ''),
+            'payment.asaas_env' => Setting::getValue('payment.asaas_env', 'sandbox'),
         ];
 
         return view('settings.index', compact('config'));
@@ -29,12 +32,22 @@ class SettingController extends Controller
             'parque.city' => 'required|string|max:100',
             'parque.state' => 'required|string|max:100',
             'parque.contact' => 'required|string|max:255',
+            'payment.gateway' => 'nullable|string|in:none,asaas,pagseguro',
+            'payment.asaas_api_key' => 'nullable|string',
+            'payment.asaas_env' => 'nullable|string|in:sandbox,production',
         ]);
 
-        $parque = $data['parque'];
-
-        foreach ($parque as $key => $value) {
-            Setting::setValue('parque.'.$key, $value);
+        if (isset($data['parque'])) {
+            foreach ($data['parque'] as $key => $value) {
+                Setting::setValue('parque.'.$key, $value);
+            }
+        }
+        
+        if (isset($data['payment'])) {
+            foreach ($data['payment'] as $key => $value) {
+                // Ignore nulls to avoid overwriting with empty unless explicit
+                Setting::setValue('payment.'.$key, $value ?? '');
+            }
         }
 
         return redirect()->route('settings.index')->with('success', 'Configurações atualizadas com sucesso!');

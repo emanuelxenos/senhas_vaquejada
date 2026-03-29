@@ -49,10 +49,14 @@
                         <div class="col-md-6 mb-3">
                             <label for="forma_pagamento" class="form-label">Forma de Pagamento *</label>
                             <select name="forma_pagamento" id="forma_pagamento" class="form-select @error('forma_pagamento') is-invalid @enderror" required>
-                                <option value="">Selecione...</option>
+                                <option value="" {{ old('forma_pagamento') == '' ? 'selected' : '' }}>Selecione...</option>
                                 <option value="Dinheiro" {{ old('forma_pagamento') == 'Dinheiro' ? 'selected' : '' }}>Dinheiro</option>
-                                <option value="Pix" {{ old('forma_pagamento') == 'Pix' ? 'selected' : '' }}>Pix</option>
-                                <option value="Cartão" {{ old('forma_pagamento') == 'Cartão' ? 'selected' : '' }}>Cartão</option>
+                                <option value="Pix" {{ old('forma_pagamento') == 'Pix' ? 'selected' : '' }}>Pix Manual</option>
+                                @php $gateway = \App\Models\Setting::getValue('payment.gateway', 'none') @endphp
+                                @if($gateway !== 'none')
+                                    <option value="Pix (Gateway)" {{ old('forma_pagamento') == 'Pix (Gateway)' ? 'selected' : '' }} class="fw-bold text-success">Pix Online (Imediato)</option>
+                                @endif
+                                <option value="Cartão" {{ old('forma_pagamento') == 'Cartão' ? 'selected' : '' }}>Cartão Manual</option>
                                 <option value="Crediário" {{ old('forma_pagamento') == 'Crediário' ? 'selected' : '' }}>Crediário</option>
                                 <option value="Cheque" {{ old('forma_pagamento') == 'Cheque' ? 'selected' : '' }}>Cheque</option>
                                 <option value="Troca" {{ old('forma_pagamento') == 'Troca' ? 'selected' : '' }}>Troca</option>

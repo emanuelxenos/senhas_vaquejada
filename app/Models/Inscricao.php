@@ -16,6 +16,10 @@ class Inscricao extends Model
         'forma_pagamento',
         'valor_total',
         'status_pagamento',
+        'gateway_provider',
+        'gateway_transaction_id',
+        'gateway_qr_code',
+        'gateway_qr_code_url',
     ];
 
     protected $casts = [

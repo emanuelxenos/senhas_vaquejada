@@ -14,6 +14,10 @@ use App\Http\Controllers\RelatorioController;
 // Rota home (redirecionador)
 Route::get('/', [RedirectController::class, 'index']);
 
+// Webhooks de Pagamento (Público)
+Route::post('/webhook/asaas', [\App\Http\Controllers\WebhookController::class, 'asaas'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class]);
+
 // Rotas de autenticação (públicas)
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login')->middleware('guest');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post')->middleware('guest');
@@ -36,6 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/inscricoes', [InscricaoController::class, 'index'])->name('inscricoes.index');
     Route::get('/inscricoes/create', [InscricaoController::class, 'create'])->name('inscricoes.create');
     Route::post('/inscricoes', [InscricaoController::class, 'store'])->name('inscricoes.store');
+    Route::get('/inscricoes/{inscricao}/pagamento', [InscricaoController::class, 'pagamento'])->name('inscricoes.pagamento');
     Route::get('/inscricoes/{inscricao}/edit', [InscricaoController::class, 'edit'])->name('inscricoes.edit');
     Route::put('/inscricoes/{inscricao}', [InscricaoController::class, 'update'])->name('inscricoes.update');
     Route::delete('/inscricoes/{inscricao}', [InscricaoController::class, 'destroy'])->name('inscricoes.destroy');
