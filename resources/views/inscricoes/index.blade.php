@@ -76,6 +76,19 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     @endcan
+                                    @if($inscricao->forma_pagamento == 'Pix (Gateway)' && $inscricao->status_pagamento == 'pendente')
+                                        @if($inscricao->gateway_qr_code)
+                                            <a href="{{ route('inscricoes.pagamento', $inscricao) }}" class="btn btn-sm btn-outline-success" title="Ver PIX Atual">
+                                                <i class="fas fa-qrcode"></i>
+                                            </a>
+                                        @endif
+                                        <form action="{{ route('inscricoes.gerarPix', $inscricao) }}" method="POST" style="display:inline-block;">
+                                            @csrf
+                                            <button class="btn btn-sm btn-outline-warning" onclick="return confirm('Isso gerará um novo código PIX para essa inscrição. Deseja continuar?')" title="Gerar Novo PIX">
+                                                <i class="fas fa-sync"></i>
+                                            </button>
+                                        </form>
+                                    @endif
                                     @if($inscricao->senhas->count() > 0)
                                         <a href="{{ route('inscricoes.pdf', $inscricao) }}" target="_blank" class="btn btn-sm btn-outline-secondary" title="PDF">
                                             <i class="fas fa-file-pdf"></i>

@@ -41,6 +41,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/inscricoes/create', [InscricaoController::class, 'create'])->name('inscricoes.create');
     Route::post('/inscricoes', [InscricaoController::class, 'store'])->name('inscricoes.store');
     Route::get('/inscricoes/{inscricao}/pagamento', [InscricaoController::class, 'pagamento'])->name('inscricoes.pagamento');
+    Route::post('/inscricoes/{inscricao}/gerar-pix', [InscricaoController::class, 'gerarPixManual'])->name('inscricoes.gerarPix');
     Route::get('/inscricoes/{inscricao}/edit', [InscricaoController::class, 'edit'])->name('inscricoes.edit');
     Route::put('/inscricoes/{inscricao}', [InscricaoController::class, 'update'])->name('inscricoes.update');
     Route::delete('/inscricoes/{inscricao}', [InscricaoController::class, 'destroy'])->name('inscricoes.destroy');

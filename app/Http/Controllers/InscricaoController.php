@@ -90,6 +90,32 @@ class InscricaoController extends Controller
         return view('inscricoes.pagamento', compact('inscricao'));
     }
 
+    public function gerarPixManual(Inscricao $inscricao)
+    {
+        Gate::authorize('manage-cadastros');
+        
+        if ($inscricao->status_pagamento !== 'pendente' || $inscricao->forma_pagamento !== 'Pix (Gateway)') {
+            return redirect()->route('inscricoes.index')->with('error', 'Esta inscrição não está pendente ou não é do tipo Pix Gateway.');
+        }
+
+        try {
+            $asaas = new AsaasGateway();
+            $pixData = $asaas->gerarPix($inscricao, (float)$inscricao->valor_total);
+            
+            $inscricao->update([
+                'gateway_provider' => 'asaas',
+                'gateway_transaction_id' => $pixData['transaction_id'],
+                'gateway_qr_code' => $pixData['qr_code'],
+                'gateway_qr_code_url' => $pixData['qr_code_url'],
+            ]);
+            
+            return redirect()->route('inscricoes.pagamento', $inscricao->id)
+                             ->with('sucesso', 'A cobrança PIX foi atualizada com sucesso.');
+        } catch (\Exception $e) {
+            return redirect()->route('inscricoes.index')->with('error', 'Falha ao gerar PIX: ' . $e->getMessage());
+        }
+    }
+
     public function edit(Inscricao $inscricao)
     {
         Gate::authorize('manage-cadastros');
