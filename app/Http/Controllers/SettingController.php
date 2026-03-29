@@ -19,6 +19,8 @@ class SettingController extends Controller
             'payment.gateway' => Setting::getValue('payment.gateway', 'none'),
             'payment.asaas_api_key' => Setting::getValue('payment.asaas_api_key', ''),
             'payment.asaas_env' => Setting::getValue('payment.asaas_env', 'sandbox'),
+            'payment.pagseguro_token' => Setting::getValue('payment.pagseguro_token', ''),
+            'payment.pagseguro_env' => Setting::getValue('payment.pagseguro_env', 'sandbox'),
         ];
 
         return view('settings.index', compact('config'));
@@ -35,6 +37,8 @@ class SettingController extends Controller
             'payment.gateway' => 'nullable|string|in:none,asaas,pagseguro',
             'payment.asaas_api_key' => 'nullable|string',
             'payment.asaas_env' => 'nullable|string|in:sandbox,production',
+            'payment.pagseguro_token' => 'nullable|string',
+            'payment.pagseguro_env' => 'nullable|string|in:sandbox,production',
         ]);
 
         if (isset($data['parque'])) {

@@ -6,11 +6,21 @@ use App\Models\Competidor;
 use App\Models\Inscricao;
 use App\Models\Setting;
 use App\Services\Pagamento\AsaasGateway;
+use App\Services\Pagamento\PagSeguroGateway;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class InscricaoController extends Controller
 {
+    private function getGatewayInstance(string $provider)
+    {
+        if ($provider === 'asaas') {
+            return new AsaasGateway();
+        } elseif ($provider === 'pagseguro') {
+            return new PagSeguroGateway();
+        }
+        throw new \Exception("Gateway não suportado ou inválido.");
+    }
     public function index(Request $request)
     {
         $search = trim((string) $request->query('q', ''));
@@ -58,13 +68,14 @@ class InscricaoController extends Controller
 
         $inscricao = Inscricao::create($data);
 
-        if ($data['forma_pagamento'] === 'Pix (Gateway)' && Setting::getValue('payment.gateway', 'none') === 'asaas') {
+        $provider = Setting::getValue('payment.gateway', 'none');
+        if ($data['forma_pagamento'] === 'Pix (Gateway)' && in_array($provider, ['asaas', 'pagseguro'])) {
             try {
-                $asaas = new AsaasGateway();
-                $pixData = $asaas->gerarPix($inscricao, (float)$data['valor_total']);
+                $gateway = $this->getGatewayInstance($provider);
+                $pixData = $gateway->gerarPix($inscricao, (float)$data['valor_total']);
                 
                 $inscricao->update([
-                    'gateway_provider' => 'asaas',
+                    'gateway_provider' => $provider,
                     'gateway_transaction_id' => $pixData['transaction_id'],
                     'gateway_qr_code' => $pixData['qr_code'],
                     'gateway_qr_code_url' => $pixData['qr_code_url'],
@@ -106,10 +117,10 @@ class InscricaoController extends Controller
             return response()->json(['status' => 'pago']);
         }
         
-        if ($inscricao->gateway_provider === 'asaas' && $inscricao->gateway_transaction_id) {
+        if (in_array($inscricao->gateway_provider, ['asaas', 'pagseguro']) && $inscricao->gateway_transaction_id) {
             try {
-                $asaas = new AsaasGateway();
-                $novoStatus = $asaas->consultarStatus($inscricao->gateway_transaction_id);
+                $gateway = $this->getGatewayInstance($inscricao->gateway_provider);
+                $novoStatus = $gateway->consultarStatus($inscricao->gateway_transaction_id);
                 
                 if ($novoStatus !== 'pendente') {
                     $inscricao->update(['status_pagamento' => $novoStatus]);
@@ -133,11 +144,16 @@ class InscricaoController extends Controller
         }
 
         try {
-            $asaas = new AsaasGateway();
-            $pixData = $asaas->gerarPix($inscricao, (float)$inscricao->valor_total);
+            $provider = Setting::getValue('payment.gateway', 'none');
+            if ($provider === 'none') {
+                throw new \Exception("Nenhum gateway de pagamento está ativo nas configurações.");
+            }
+
+            $gateway = $this->getGatewayInstance($provider);
+            $pixData = $gateway->gerarPix($inscricao, (float)$inscricao->valor_total);
             
             $inscricao->update([
-                'gateway_provider' => 'asaas',
+                'gateway_provider' => $provider,
                 'gateway_transaction_id' => $pixData['transaction_id'],
                 'gateway_qr_code' => $pixData['qr_code'],
                 'gateway_qr_code_url' => $pixData['qr_code_url'],
