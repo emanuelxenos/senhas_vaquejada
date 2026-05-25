@@ -9,6 +9,11 @@
     <a href="{{ route('portal.dashboard') }}" class="btn btn-secondary text-sm" style="width: auto; padding: 0.6rem 1.25rem;">Voltar ao Painel</a>
 </div>
 
+<div class="alert" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); color: #93c5fd; max-width: 550px; margin: 0 auto 1.5rem auto;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+    Lembre-se: Você só poderá escolher os números das senhas para correr após este pagamento ser confirmado.
+</div>
+
 <div class="card text-center" style="max-width: 550px; margin: 0 auto; padding: 3rem 2rem;">
     <h2 style="font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--primary); font-family: 'Outfit';">R$ {{ number_format($inscricao->valor_total, 2, ',', '.') }}</h2>
     <p class="text-muted text-sm mb-6" style="background: rgba(255,255,255,0.05); display: inline-block; padding: 0.25rem 0.75rem; border-radius: 999px;">

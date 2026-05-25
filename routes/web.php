@@ -43,6 +43,9 @@ Route::prefix('portal')->name('portal.')->group(function () {
         Route::post('/inscricoes', [PortalInscricaoController::class, 'store'])->name('inscricoes.store');
         Route::get('/inscricoes/{inscricao}/pagamento', [PortalInscricaoController::class, 'pagamento'])->name('inscricoes.pagamento');
         Route::get('/inscricoes/{inscricao}/status', [PortalInscricaoController::class, 'checarStatus'])->name('inscricoes.status');
+        Route::get('/inscricoes/{inscricao}/senhas', [PortalInscricaoController::class, 'showSenhas'])->name('inscricoes.senhas');
+        Route::post('/inscricoes/{inscricao}/senhas', [PortalInscricaoController::class, 'storeSenhas'])->name('inscricoes.senhas.store');
+        Route::get('/inscricoes/{inscricao}/pdf', [PortalInscricaoController::class, 'gerarPdf'])->name('inscricoes.pdf');
     });
 });
 

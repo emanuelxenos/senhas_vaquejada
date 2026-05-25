@@ -170,4 +170,107 @@ class PortalInscricaoController extends Controller
         
         return response()->json(['status' => $inscricao->status_pagamento]);
     }
+
+    public function showSenhas(Inscricao $inscricao)
+    {
+        $user = Auth::user();
+        if ($inscricao->vaqueiro_id !== $user->competidor->id) {
+            abort(403);
+        }
+
+        $inscricao->load(['bateEsteira', 'senhas' => function ($q) {
+            $q->where('status', '!=', 'cancelado')->orderBy('numero_senha');
+        }]);
+
+        $senhasCadastradas = $inscricao->senhas->count();
+        $restantes = max($inscricao->quantidade_senhas - $senhasCadastradas, 0);
+
+        // Obter todas as senhas já vendidas e ativas no evento para evitar conflito
+        $senhasVendidas = \App\Models\Senha::where('status', '!=', 'cancelado')
+            ->orderByRaw('CAST(numero_senha AS UNSIGNED) ASC')
+            ->pluck('numero_senha')
+            ->toArray();
+
+        return view('portal.inscricoes.senhas', compact('inscricao', 'restantes', 'senhasVendidas'));
+    }
+
+    public function storeSenhas(Request $request, Inscricao $inscricao)
+    {
+        $user = Auth::user();
+        if ($inscricao->vaqueiro_id !== $user->competidor->id) {
+            abort(403);
+        }
+
+        if ($inscricao->status_pagamento !== 'pago') {
+            return back()->with('error', 'Você só pode escolher senhas após a confirmação do pagamento.');
+        }
+
+        $inscricao->loadCount(['senhas' => function ($q) {
+            $q->where('status', '!=', 'cancelado');
+        }]);
+
+        $quantidade = (int) $inscricao->quantidade_senhas;
+        $jaCadastradas = (int) $inscricao->senhas_count;
+        $restantes = max($quantidade - $jaCadastradas, 0);
+
+        if ($restantes === 0) {
+            return back()->with('sucesso', 'Todas as senhas desta inscrição já foram escolhidas.');
+        }
+
+        $senhas = collect($request->input('senhas', []))
+            ->map(fn ($v) => is_string($v) ? trim($v) : $v)
+            ->filter(fn ($v) => $v !== null && $v !== '')
+            ->values()
+            ->all();
+
+        if (count($senhas) !== $restantes) {
+            return back()->withErrors(['senhas' => "Você precisa cadastrar exatamente {$restantes} senha(s)."])->withInput();
+        }
+
+        validator(
+            ['senhas' => $senhas],
+            [
+                'senhas' => 'required|array|min:1', 
+                'senhas.*' => [
+                    'required',
+                    'string',
+                    'max:50',
+                    'distinct',
+                    \Illuminate\Validation\Rule::unique('senhas', 'numero_senha')->whereNot('status', 'cancelado')
+                ]
+            ],
+            [
+                'senhas.*.unique' => 'Um dos números de senha escolhidos já foi pego por outro competidor. Escolha outro.'
+            ]
+        )->validate();
+
+        foreach ($senhas as $numero) {
+            \App\Models\Senha::create([
+                'inscricao_id' => $inscricao->id,
+                'numero_senha' => $numero,
+                'status' => 'pendente'
+            ]);
+        }
+
+        return redirect()->route('portal.inscricoes.senhas', $inscricao->id)->with('sucesso', 'Suas senhas foram escolhidas e garantidas com sucesso!');
+    }
+
+    public function gerarPdf(Inscricao $inscricao)
+    {
+        $user = Auth::user();
+        if ($inscricao->vaqueiro_id !== $user->competidor->id) {
+            abort(403);
+        }
+
+        if ($inscricao->senhas()->count() === 0) {
+            return back()->with('error', 'Nenhuma senha escolhida ainda para gerar comprovante.');
+        }
+
+        $senhas = $inscricao->senhas()->where('status', '!=', 'cancelado')->orderBy('numero_senha')->get();
+
+        $pdf = \PDF::loadView('pdf.vaqueiro', compact('inscricao', 'senhas'));
+        $name = 'Comprovante_Vaquejada_' . str_pad($inscricao->id, 4, '0', STR_PAD_LEFT) . '.pdf';
+
+        return $pdf->stream($name);
+    }
 }

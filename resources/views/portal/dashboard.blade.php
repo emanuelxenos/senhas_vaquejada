@@ -48,6 +48,9 @@
                                 Finalizar Pagamento
                             </a>
                         @endif
+                        <a href="{{ route('portal.inscricoes.senhas', $insc->id) }}" class="btn btn-secondary text-sm mt-2" style="padding: 0.4rem 1rem; width: auto; font-size: 0.85rem; margin-left: 0.5rem;">
+                            Ver / Escolher Senhas
+                        </a>
                     </div>
                 </div>
             </div>

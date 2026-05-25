@@ -9,6 +9,11 @@
     <a href="{{ route('portal.dashboard') }}" class="btn btn-secondary text-sm" style="width: auto; padding: 0.6rem 1.25rem;">Voltar</a>
 </div>
 
+<div class="alert" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); color: #93c5fd;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+    <strong>Aviso:</strong> A escolha dos números das suas senhas só será liberada após a confirmação do pagamento da inscrição.
+</div>
+
 <div class="card" style="padding: 2.5rem;">
     @if ($errors->any())
         <div class="alert alert-error text-sm">
