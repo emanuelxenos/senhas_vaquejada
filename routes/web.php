@@ -10,6 +10,8 @@ use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RelatorioController;
+use App\Http\Controllers\PortalAuthController;
+use App\Http\Controllers\PortalInscricaoController;
 
 // Rota home (redirecionador)
 Route::get('/', [RedirectController::class, 'index']);
@@ -18,13 +20,33 @@ Route::get('/', [RedirectController::class, 'index']);
 Route::post('/webhook/asaas', [\App\Http\Controllers\WebhookController::class, 'asaas'])
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class]);
 
-// Rotas de autenticação (públicas)
+// Rotas de autenticação administrativa (públicas)
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login')->middleware('guest');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post')->middleware('guest');
-// Rotas de registro público desabilitadas (apenas Admin Master pode criar)
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
-// Rotas protegidas (requerem autenticação)
+// Rotas do Portal do Vaqueiro (Públicas / Guest)
+Route::prefix('portal')->name('portal.')->group(function () {
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', [PortalAuthController::class, 'showLoginForm'])->name('login');
+        Route::post('/login', [PortalAuthController::class, 'login'])->name('login.post');
+        Route::get('/register', [PortalAuthController::class, 'showRegisterForm'])->name('register');
+        Route::post('/register', [PortalAuthController::class, 'register'])->name('register.post');
+    });
+
+    Route::middleware('auth')->group(function () {
+        Route::post('/logout', [PortalAuthController::class, 'logout'])->name('logout');
+        
+        // Apenas para Vaqueiros
+        Route::get('/dashboard', [PortalInscricaoController::class, 'dashboard'])->name('dashboard');
+        Route::get('/inscricoes/create', [PortalInscricaoController::class, 'create'])->name('inscricoes.create');
+        Route::post('/inscricoes', [PortalInscricaoController::class, 'store'])->name('inscricoes.store');
+        Route::get('/inscricoes/{inscricao}/pagamento', [PortalInscricaoController::class, 'pagamento'])->name('inscricoes.pagamento');
+        Route::get('/inscricoes/{inscricao}/status', [PortalInscricaoController::class, 'checarStatus'])->name('inscricoes.status');
+    });
+});
+
+// Rotas protegidas Administrativas (requerem autenticação e cargo não-vaqueiro)
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 

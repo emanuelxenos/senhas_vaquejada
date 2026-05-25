@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
@@ -38,6 +39,16 @@ class User extends Authenticatable
     public function isLocutor()
     {
         return $this->role === 'locutor';
+    }
+
+    public function isVaqueiro()
+    {
+        return $this->role === 'vaqueiro';
+    }
+
+    public function competidor(): HasOne
+    {
+        return $this->hasOne(Competidor::class);
     }
 
     /**

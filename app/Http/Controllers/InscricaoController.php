@@ -196,6 +196,7 @@ class InscricaoController extends Controller
     {
         Gate::authorize('manage-cadastros');
         $inscricao->delete();
+        // Senhas::where('inscricao_id', $inscricao->id)->delete();
         return redirect()->route('inscricoes.index')->with('sucesso', 'Inscrição excluída com sucesso.');
     }
 }

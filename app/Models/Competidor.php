@@ -4,17 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Competidor extends Model
 {
 
     protected $table = 'competidores';
     protected $fillable = [
+        'user_id',
         'nome',
         'cpf',
         'cidade',
         'representacao',
     ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 
     /**
      * Inscrições onde este competidor é o vaqueiro
