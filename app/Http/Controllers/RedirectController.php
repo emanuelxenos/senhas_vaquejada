@@ -10,9 +10,12 @@ class RedirectController extends Controller
     public function index()
     {
         if (auth()->check()) {
+            if (auth()->user()->isVaqueiro()) {
+                return redirect()->route('portal.dashboard');
+            }
             return redirect()->route('dashboard');
         }
 
-        return redirect()->route('login');
+        return redirect()->route('portal.login');
     }
 }
