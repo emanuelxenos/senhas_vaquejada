@@ -75,9 +75,9 @@ class PortalInscricaoController extends Controller
 
         $request->validate([
             'bate_esteira_id' => 'nullable|exists:competidores,id',
-            'novo_bate_esteira_nome' => 'required_without:bate_esteira_id|string|max:255',
-            'novo_bate_esteira_cpf' => 'required_without:bate_esteira_id|string|max:20',
-            'novo_bate_esteira_cidade' => 'required_without:bate_esteira_id|string|max:255',
+            'novo_bate_esteira_nome' => 'required_without:bate_esteira_id|nullable|string|max:255',
+            'novo_bate_esteira_cpf' => 'required_without:bate_esteira_id|nullable|string|max:20',
+            'novo_bate_esteira_cidade' => 'required_without:bate_esteira_id|nullable|string|max:255',
             'novo_bate_esteira_representacao' => 'nullable|string|max:255',
             'quantidade_senhas' => 'required|integer|min:1|max:50',
             'valor_total' => 'required|numeric|min:0',
