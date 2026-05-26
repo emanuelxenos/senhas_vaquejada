@@ -103,11 +103,11 @@
                 <div class="comissao-item">
                     <span class="label">Comissão:</span>
                     <span>Profissional:</span>
-                    <span class="quadrado"></span>
+                    <span class="quadrado" style="{{ (isset($senha->tipo) && $senha->tipo === 'profissional') ? 'background-color: #000;' : '' }}"></span>
                     <span>Amador:</span>
-                    <span class="quadrado"></span>
+                    <span class="quadrado" style="{{ (!isset($senha->tipo) || $senha->tipo === 'amador') ? 'background-color: #000;' : '' }}"></span>
                     <span>Boi Tv:</span>
-                    <span class="quadrado"></span>
+                    <span class="quadrado" style="{{ (isset($senha->tipo) && $senha->tipo === 'boi_tv') ? 'background-color: #000;' : '' }}"></span>
                 </div>
             </div>
 

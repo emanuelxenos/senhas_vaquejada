@@ -33,6 +33,18 @@
                         @enderror
                     </div>
 
+                    <div class="mb-3">
+                        <label for="tipo" class="form-label">Categoria / Tipo *</label>
+                        <select name="tipo" id="tipo" class="form-select @error('tipo') is-invalid @enderror" required>
+                            <option value="amador" {{ old('tipo', $senha->tipo) == 'amador' ? 'selected' : '' }}>Amador</option>
+                            <option value="profissional" {{ old('tipo', $senha->tipo) == 'profissional' ? 'selected' : '' }}>Profissional</option>
+                            <option value="boi_tv" {{ old('tipo', $senha->tipo) == 'boi_tv' ? 'selected' : '' }}>Boi TV</option>
+                        </select>
+                        @error('tipo')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('senhas.index') }}" class="btn btn-secondary">
                             <i class="fas fa-arrow-left"></i> Voltar

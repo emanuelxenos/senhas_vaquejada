@@ -135,10 +135,23 @@
             // Adicionar campos para as senhas restantes
             for (let i = 1; i <= restantes; i++) {
                 const div = document.createElement('div');
-                div.className = 'mb-2';
+                div.className = 'mb-3 p-3 bg-light rounded border';
                 div.innerHTML = `
-                    <label class="form-label">Senha ${i}</label>
-                    <input class="form-control" name="senhas[]" placeholder="Ex: 001, 002, etc." required />
+                    <h5 class="text-primary mb-2 small fw-bold">Senha ${i}</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-2 mb-md-0">
+                            <label class="form-label small">Número da Senha</label>
+                            <input class="form-control" name="senhas[]" placeholder="Ex: 001, 002, etc." required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small">Categoria / Tipo</label>
+                            <select name="tipos[]" class="form-select" required>
+                                <option value="amador" selected>Amador</option>
+                                <option value="profissional">Profissional</option>
+                                <option value="boi_tv">Boi TV</option>
+                            </select>
+                        </div>
+                    </div>
                 `;
                 campo.appendChild(div);
             }

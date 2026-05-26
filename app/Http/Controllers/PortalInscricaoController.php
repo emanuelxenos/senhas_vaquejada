@@ -223,12 +223,21 @@ class PortalInscricaoController extends Controller
             ->values()
             ->all();
 
+        $tipos = collect($request->input('tipos', []))
+            ->map(fn ($v) => is_string($v) ? trim($v) : $v)
+            ->filter(fn ($v) => $v !== null && $v !== '')
+            ->values()
+            ->all();
+
         if (count($senhas) !== $restantes) {
             return back()->withErrors(['senhas' => "Você precisa cadastrar exatamente {$restantes} senha(s)."])->withInput();
         }
 
         validator(
-            ['senhas' => $senhas],
+            [
+                'senhas' => $senhas,
+                'tipos' => $tipos
+            ],
             [
                 'senhas' => 'required|array|min:1', 
                 'senhas.*' => [
@@ -237,18 +246,23 @@ class PortalInscricaoController extends Controller
                     'max:50',
                     'distinct',
                     \Illuminate\Validation\Rule::unique('senhas', 'numero_senha')->whereNot('status', 'cancelado')
-                ]
+                ],
+                'tipos' => 'required|array|min:1',
+                'tipos.*' => 'required|string|in:amador,profissional,boi_tv'
             ],
             [
-                'senhas.*.unique' => 'Um dos números de senha escolhidos já foi pego por outro competidor. Escolha outro.'
+                'senhas.*.unique' => 'Um dos números de senha escolhidos já foi pego por outro competidor. Escolha outro.',
+                'tipos.*.in' => 'Categoria inválida selecionada.'
             ]
         )->validate();
 
-        foreach ($senhas as $numero) {
+        foreach ($senhas as $index => $numero) {
+            $tipo = $tipos[$index] ?? 'amador';
             \App\Models\Senha::create([
                 'inscricao_id' => $inscricao->id,
                 'numero_senha' => $numero,
-                'status' => 'pendente'
+                'status' => 'pendente',
+                'tipo' => $tipo
             ]);
         }
 

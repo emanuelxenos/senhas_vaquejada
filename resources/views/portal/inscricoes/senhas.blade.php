@@ -55,6 +55,13 @@
                         <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 1.5rem; text-align: center; min-width: 120px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.05);">
                             <span style="display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #34d399; margin-bottom: 0.5rem; font-weight: 700;">Número</span>
                             <span style="font-size: 2.5rem; font-family: 'Outfit'; font-weight: 800; color: #fff;">{{ $senha->numero_senha }}</span>
+                            <span style="display: block; font-size: 0.75rem; color: #94a3b8; font-weight: 600; margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                                @if($senha->tipo === 'boi_tv')
+                                    Boi TV
+                                @else
+                                    {{ ucfirst($senha->tipo ?? 'amador') }}
+                                @endif
+                            </span>
                             <span class="badge badge-{{ $senha->status }} mt-2" style="font-size: 0.7rem;">{{ ucfirst($senha->status) }}</span>
                         </div>
                     @endforeach
@@ -118,12 +125,28 @@
                 <form method="POST" action="{{ route('portal.inscricoes.senhas.store', $inscricao->id) }}">
                     @csrf
                     
-                    <div class="flex flex-mobile-col gap-4" style="margin-bottom: 2rem;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
                         @for($i = 0; $i < $restantes; $i++)
-                            <div class="form-group" style="margin-bottom: 0; flex: 1;">
-                                <label class="form-label">Senha {{ $i + 1 }}</label>
-                                <input type="number" name="senhas[]" class="form-control input-senha" placeholder="Ex: {{ rand(10, 99) }}" required oninput="verificarDisponibilidade(this)" min="1">
-                                <span class="senha-status text-sm mt-1" style="display: block; min-height: 20px;"></span>
+                            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.25rem;">
+                                <h4 style="color: #fff; font-family: 'Outfit'; font-size: 1.05rem; margin-top: 0; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    <span style="background: var(--primary); color: #fff; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700;">{{ $i + 1 }}</span>
+                                    Senha {{ $i + 1 }}
+                                </h4>
+                                
+                                <div class="form-group" style="margin-bottom: 1rem;">
+                                    <label class="form-label">Número da Senha</label>
+                                    <input type="number" name="senhas[]" class="form-control input-senha" placeholder="Ex: {{ rand(10, 99) }}" required oninput="verificarDisponibilidade(this)" min="1">
+                                    <span class="senha-status text-sm mt-1" style="display: block; min-height: 20px;"></span>
+                                </div>
+                                
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label">Categoria / Tipo</label>
+                                    <select name="tipos[]" class="form-control" style="background: rgba(15, 23, 42, 0.6); color: #fff; border: 1px solid var(--glass-border); border-radius: 8px; padding: 0.6rem; width: 100%; cursor: pointer;" required>
+                                        <option value="amador" selected>Amador</option>
+                                        <option value="profissional">Profissional</option>
+                                        <option value="boi_tv">Boi TV</option>
+                                    </select>
+                                </div>
                             </div>
                         @endfor
                     </div>

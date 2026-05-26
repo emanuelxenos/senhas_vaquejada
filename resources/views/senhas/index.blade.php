@@ -38,13 +38,17 @@
              data-numero="{{ $senha->numero_senha }}"
              data-status="{{ $senha->status }}"
              data-dupla="{{ $senha->inscricao->vaqueiro->nome }} & {{ $senha->inscricao->bateEsteira->nome }}"
+             data-tipo="{{ $senha->tipo ?? 'amador' }}"
              data-motivo="{{ $senha->motivo_cancelamento }}"
              data-cancelado_por="{{ $senha->cancelado_por }}"
              data-bs-toggle="tooltip"
              data-bs-html="true"
              data-bs-placement="top"
-             title="Dupla: {{ $senha->inscricao->vaqueiro->nome }} & {{ $senha->inscricao->bateEsteira->nome }}{!! $senha->status === 'cancelado' ? '<br>Cancelado por: ' . htmlspecialchars($senha->cancelado_por) . '<br>Motivo: ' . htmlspecialchars($senha->motivo_cancelamento) : '' !!}">
+             title="Dupla: {{ $senha->inscricao->vaqueiro->nome }} & {{ $senha->inscricao->bateEsteira->nome }}<br>Categoria: {{ $senha->tipo === 'boi_tv' ? 'Boi TV' : ucfirst($senha->tipo ?? 'amador') }}{!! $senha->status === 'cancelado' ? '<br>Cancelado por: ' . htmlspecialchars($senha->cancelado_por) . '<br>Motivo: ' . htmlspecialchars($senha->motivo_cancelamento) : '' !!}">
             <div class="senha-number">{{ $senha->numero_senha }}</div>
+            <div style="font-size: 10px; color: rgba(255,255,255,0.85); font-weight: bold; margin-bottom: 4px; text-transform: uppercase;">
+                {{ $senha->tipo === 'boi_tv' ? 'Boi TV' : ucfirst($senha->tipo ?? 'amador') }}
+            </div>
             <div class="senha-status">
                 <span class="badge
                     @if($senha->status == 'boi_batido') bg-success
@@ -75,15 +79,26 @@
                         <div class="text-muted small" id="modalSenhaDupla"></div>
                     </div>
 
-                    <label for="modalSenhaStatus" class="form-label">Status</label>
-                    <select class="form-select" name="status" id="modalSenhaStatus" required>
-                        <option value="pendente">Pendente</option>
-                        <option value="correu">Correu</option>
-                        <option value="boi_batido">Boi batido</option>
-                        @if(!auth()->user()->isLocutor())
-                            <option value="cancelado">Cancelado</option>
-                        @endif
-                    </select>
+                     <div class="mb-3">
+                        <label for="modalSenhaStatus" class="form-label">Status</label>
+                        <select class="form-select" name="status" id="modalSenhaStatus" required>
+                            <option value="pendente">Pendente</option>
+                            <option value="correu">Correu</option>
+                            <option value="boi_batido">Boi batido</option>
+                            @if(!auth()->user()->isLocutor())
+                                <option value="cancelado">Cancelado</option>
+                            @endif
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="modalSenhaTipo" class="form-label">Categoria / Tipo</label>
+                        <select class="form-select" name="tipo" id="modalSenhaTipo" required>
+                            <option value="amador">Amador</option>
+                            <option value="profissional">Profissional</option>
+                            <option value="boi_tv">Boi TV</option>
+                        </select>
+                    </div>
 
                     <div id="motivoCancelamentoContainer" class="mt-3" style="display: none;">
                         <label for="modalSenhaMotivo" class="form-label">Motivo do Cancelamento <span class="text-danger">*</span></label>
@@ -196,7 +211,8 @@
         const modalEl = document.getElementById('senhaStatusModal');
         const modal = new bootstrap.Modal(modalEl);
         const form = document.getElementById('senhaStatusForm');
-        const statusSelect = document.getElementById('modalSenhaStatus');
+         const statusSelect = document.getElementById('modalSenhaStatus');
+        const tipoSelect = document.getElementById('modalSenhaTipo');
         const numeroEl = document.getElementById('modalSenhaNumero');
         const duplaEl = document.getElementById('modalSenhaDupla');
         const motivoContainer = document.getElementById('motivoCancelamentoContainer');
@@ -216,12 +232,18 @@
             const url = card.getAttribute('data-update-url');
             const numero = card.getAttribute('data-numero') || '';
             const status = card.getAttribute('data-status') || 'pendente';
+            const tipo = card.getAttribute('data-tipo') || 'amador';
             const dupla = card.getAttribute('data-dupla') || '';
             const motivo = card.getAttribute('data-motivo') || '';
 
             form.setAttribute('action', url);
             statusSelect.value = status;
             statusSelect.dispatchEvent(new Event('change'));
+            
+            if (tipoSelect) {
+                tipoSelect.value = tipo;
+            }
+            
             motivoInput.value = motivo;
 
             numeroEl.textContent = numero;

@@ -69,6 +69,12 @@ class SenhaController extends Controller
             ->values()
             ->all();
 
+        $tipos = collect($request->input('tipos', []))
+            ->map(fn ($v) => is_string($v) ? trim($v) : $v)
+            ->filter(fn ($v) => $v !== null && $v !== '')
+            ->values()
+            ->all();
+
         if ($restantes === 0) {
             return redirect()->route('senhas.index')->with('sucesso', 'Esta inscrição já está completa.');
         }
@@ -82,7 +88,10 @@ class SenhaController extends Controller
 
         // Validar conteúdo/uniqueness depois de filtrar vazios. Ignorar as canceladas.
         validator(
-            ['senhas' => $senhas],
+            [
+                'senhas' => $senhas,
+                'tipos' => $tipos
+            ],
             [
                 'senhas' => 'required|array|min:1', 
                 'senhas.*' => [
@@ -91,15 +100,19 @@ class SenhaController extends Controller
                     'max:50',
                     'distinct',
                     \Illuminate\Validation\Rule::unique('senhas', 'numero_senha')->whereNot('status', 'cancelado')
-                ]
+                ],
+                'tipos' => 'required|array|min:1',
+                'tipos.*' => 'required|string|in:amador,profissional,boi_tv'
             ]
         )->validate();
 
-        foreach ($senhas as $numero) {
+        foreach ($senhas as $index => $numero) {
+            $tipo = $tipos[$index] ?? 'amador';
             Senha::create([
                 'inscricao_id' => $inscricao->id,
                 'numero_senha' => $numero,
-                'status' => 'pendente'
+                'status' => 'pendente',
+                'tipo' => $tipo
             ]);
         }
 
@@ -124,6 +137,7 @@ class SenhaController extends Controller
                     ->whereNot('status', 'cancelado')
             ],
             'status' => 'required|in:pendente,correu,boi_batido,cancelado',
+            'tipo' => 'sometimes|required|string|in:amador,profissional,boi_tv',
             'motivo_cancelamento' => 'required_if:status,cancelado|nullable|string',
         ]);
 
