@@ -16,6 +16,6 @@ class RedirectController extends Controller
             return redirect()->route('dashboard');
         }
 
-        return redirect()->route('portal.login');
+        return redirect()->route('login');
     }
 }
