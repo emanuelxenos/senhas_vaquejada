@@ -335,6 +335,9 @@
         <div>
             &copy; {{ date('Y') }} {{ \App\Models\Setting::getValue('parque.name', 'Parque de Vaquejada') }} &bull; Arena Virtual
         </div>
+        <div style="font-size: 0.85rem; color: rgba(255,255,255,0.4); font-weight: 500;">
+            Desenvolvido por: <a href="https://instagram.com/emanuelxenos" target="_blank" style="color: var(--gold-light); text-decoration: none; font-weight: 700; border-bottom: 1px dashed var(--gold-light); transition: all 0.2s;">@emanuelxenos</a>
+        </div>
         <!-- Link administrativo escondido sutilmente com baixíssimo contraste e sem chamar atenção -->
         <div>
             <a href="{{ route('login') }}" class="admin-link" title="Acesso Restrito">
