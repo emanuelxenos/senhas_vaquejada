@@ -33,7 +33,11 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--bg-arena);
+            background: linear-gradient(185deg, rgba(24, 10, 2, 0.92) 0%, rgba(5, 2, 0, 0.96) 100%), url('/vaquejada_bg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed; /* Efeito Parallax Rústico */
             color: var(--text-light);
             min-height: 100vh;
             display: flex;
