@@ -40,9 +40,9 @@ services:
     restart: always
     environment:
       MYSQL_DATABASE: laravel_senhas
-      MYSQL_USER: laravel_user
-      MYSQL_PASSWORD: UmaSenhaMuitoForteAqui123! # ◄ COLOQUE UMA SENHA FORTE AQUI
-      MYSQL_ROOT_PASSWORD: OutraSenhaSuperForteAqui987! # ◄ COLOQUE UMA SENHA DE ROOT FORTE AQUI
+      MYSQL_USER: senhas_user
+      MYSQL_PASSWORD: senhassecurity12 # ◄ COLOQUE UMA SENHA FORTE AQUI
+      MYSQL_ROOT_PASSWORD: senhassecurity12 # ◄ COLOQUE UMA SENHA DE ROOT FORTE AQUI
     ports:
       # Mudamos aqui também! O seu banco de dados agora está invisível para a internet.
       # Robôs e hackers não vão conseguir testar senhas na porta 3306.
