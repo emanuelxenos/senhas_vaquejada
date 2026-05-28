@@ -52,17 +52,26 @@
                 </div>
                 <div class="flex gap-4" style="flex-wrap: wrap;">
                     @foreach($inscricao->senhas as $senha)
-                        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 1.5rem; text-align: center; min-width: 120px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.05);">
-                            <span style="display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #34d399; margin-bottom: 0.5rem; font-weight: 700;">Número</span>
+                        <div style="background: rgba(9, 13, 22, 0.75); border: 1px solid rgba(217, 119, 6, 0.35); border-radius: 12px; padding: 1.5rem; text-align: center; min-width: 120px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
+                            <span style="display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 0.5rem; font-weight: 700;">Número</span>
                             <span style="font-size: 2.5rem; font-family: 'Outfit'; font-weight: 800; color: #fff;">{{ $senha->numero_senha }}</span>
-                            <span style="display: block; font-size: 0.75rem; color: #94a3b8; font-weight: 600; margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <span style="display: block; font-size: 0.75rem; color: #fed7aa; font-weight: 600; margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.5px;">
                                 @if($senha->tipo === 'boi_tv')
                                     Boi TV
                                 @else
                                     {{ ucfirst($senha->tipo ?? 'amador') }}
                                 @endif
                             </span>
-                            <span class="badge badge-{{ $senha->status }} mt-2" style="font-size: 0.7rem;">{{ ucfirst($senha->status) }}</span>
+                            @if($senha->status === 'pendente')
+                                <span class="badge badge-pendente mt-2" style="font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.35rem; cursor: help; padding: 0.4rem 0.8rem;" title="Pendente: Sua inscrição está paga e sua senha está ativa! Status 'Pendente' significa que você está apto e aguardando sua vez de correr na pista.">
+                                    Pendente (Aguardando Correr)
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.95;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                                </span>
+                            @else
+                                <span class="badge badge-{{ $senha->status }} mt-2" style="font-size: 0.75rem; padding: 0.4rem 0.8rem;">
+                                    {{ ucfirst($senha->status) }}
+                                </span>
+                            @endif
                         </div>
                     @endforeach
                 </div>
@@ -155,8 +164,8 @@
                 </form>
             </div>
         @elseif($inscricao->senhas->count() > 0)
-            <div class="alert alert-success mt-4" style="justify-content: center; margin-bottom: 0;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <div class="alert alert-success mt-4" style="justify-content: center; margin-bottom: 0; background: rgba(9, 13, 22, 0.75); border: 1px solid rgba(217, 119, 6, 0.35); color: #fffbeb;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                 Você já escolheu todas as suas senhas. Boa sorte na pista!
             </div>
         @endif
@@ -164,9 +173,27 @@
     @endif
 </div>
 
-@if(isset($restantes) && $restantes > 0)
 @push('scripts')
 <script>
+    function compartilharZap() {
+        const url = "{{ route('portal.inscricoes.pdf', $inscricao->id) }}";
+        
+        let texto = "*🏆 COMPROVANTE DE INSCRIÇÃO - {{ \App\Models\Setting::getValue('parque.name', 'Vaquejada') }}*\n\n";
+        texto += "*Inscrição:* #{{ str_pad($inscricao->id, 4, '0', STR_PAD_LEFT) }}\n";
+        texto += "*Vaqueiro:* {{ Auth::user()->name }}\n";
+        texto += "*Bate-Esteira:* {{ $inscricao->bateEsteira ? $inscricao->bateEsteira->nome : 'Não Cadastrado' }}\n\n";
+        
+        texto += "*Senhas Escolhidas:*\n";
+        @foreach($inscricao->senhas as $senha)
+            texto += "🔹 *Senha {{ $senha->numero_senha }}* ({{ $senha->tipo === 'boi_tv' ? 'Boi TV' : ucfirst($senha->tipo ?? 'Amador') }})\n";
+        @endforeach
+        
+        texto += "\n📥 Baixe seu comprovante oficial em PDF:\n" + url;
+        
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`, '_blank');
+    }
+
+    @if(isset($restantes) && $restantes > 0)
     const senhasVendidas = @json($senhasVendidas ?? []);
 
     function openModalSenhas() {
@@ -179,21 +206,6 @@
         const modal = document.getElementById('modalSenhas');
         modal.style.display = 'none';
         document.body.style.overflow = '';
-    }
-
-    function compartilharZap() {
-        const url = "{{ route('portal.inscricoes.pdf', $inscricao->id) }}";
-        const texto = `Comprovante de Inscrição Vaquejada (Inscrição #${"{{ str_pad($inscricao->id, 4, '0', STR_PAD_LEFT) }}"}). Acesse e baixe suas senhas aqui: ${url}`;
-        
-        if (navigator.share) {
-            navigator.share({
-                title: 'Comprovante de Inscrição',
-                text: texto,
-                url: url
-            }).catch(console.error);
-        } else {
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`, '_blank');
-        }
     }
 
     function verificarDisponibilidade(input) {
@@ -253,7 +265,7 @@
             btn.style.cursor = 'pointer';
         }
     }
+    @endif
 </script>
 @endpush
-@endif
 @endsection

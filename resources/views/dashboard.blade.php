@@ -10,11 +10,28 @@
                     <p class="lead mb-2">Visualize os dados do sistema com ações rápidas para cadastro e geração de relatórios.</p>
                     <p class="text-muted mb-0">Use o QR Code para abrir rapidamente no celular.</p>
                 </div>
-                <div class="text-center ms-md-3">
-                    <a id="dashboardQrLink" href="#" target="_blank" rel="noopener" class="text-decoration-none">
-                        <img id="dashboardQrCode" src="" alt="QR Code para abrir o sistema no celular" class="img-thumbnail" style="width: 120px; height: 120px;">
+                <div class="text-center ms-md-3" style="background: white; padding: 10px; border-radius: 8px; border: 1px solid #dee2e6;">
+                    <a href="{{ $mobileUrl }}" target="_blank" rel="noopener" class="text-decoration-none d-inline-block">
+                        <img src="{{ $qrCodeSvg }}" alt="QR Code" style="width: 104px; height: 104px; display: block; border: none; background: white;" />
                     </a>
-                    <div class="small text-muted mt-1">Escaneie para abrir</div>
+                    <div class="small text-muted mt-1" style="font-size: 11px;">Escaneie para abrir</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ações rápidas no topo -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm border-0 bg-white">
+            <div class="card-body p-3">
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                    <span class="fw-bold text-muted me-2"><i class="fas fa-bolt text-warning"></i> Atalhos Rápidos:</span>
+                    <a href="{{ route('competidores.create') }}" class="btn btn-outline-primary btn-sm rounded-pill"><i class="fas fa-user-plus me-1"></i> Novo Competidor</a>
+                    <a href="{{ route('inscricoes.create') }}" class="btn btn-outline-success btn-sm rounded-pill"><i class="fas fa-plus me-1"></i> Nova Inscrição</a>
+                    <a href="{{ route('senhas.create') }}" class="btn btn-outline-success btn-sm rounded-pill"><i class="fas fa-ticket-alt me-1"></i> Nova Senha</a>
+                    <a href="{{ route('relatorios.geral') }}" target="_blank" class="btn btn-outline-info btn-sm rounded-pill"><i class="fas fa-file-pdf me-1"></i> Financeiro (PDF)</a>
                 </div>
             </div>
         </div>
@@ -46,24 +63,23 @@
         <div class="card border-info h-100 shadow-sm">
             <div class="card-body">
                 <h5 class="card-title">Senhas</h5>
-                <p class="card-text fs-2 fw-bold text-success">{{ $totalSenhas }}</p>
-                <a href="{{ route('senhas.index') }}" class="btn btn-sm btn-success">Ver lista</a>
+                <p class="card-text fs-2 fw-bold text-info">{{ $totalSenhas }}</p>
+                <a href="{{ route('senhas.index') }}" class="btn btn-sm btn-info">Ver lista</a>
             </div>
         </div>
     </div>
 
+    @if(auth()->user()->role === 'admin')
     <div class="col-sm-6 col-xl-3 mb-3">
-        <div class="card border-secondary h-100 shadow-sm">
+        <div class="card border-warning h-100 shadow-sm">
             <div class="card-body">
-                <h5 class="card-title">Acesso rápido</h5>
-                <p class="mb-2 text-muted">Cadastros e relatórios</p>
-                <div class="d-grid gap-2">
-                    <a href="{{ route('competidores.create') }}" class="btn btn-sm btn-outline-primary">Novo Competidor</a>
-                    <a href="{{ route('inscricoes.create') }}" class="btn btn-sm btn-outline-success">Nova Inscrição</a>
-                </div>
+                <h5 class="card-title">Faturamento (Pago)</h5>
+                <p class="card-text fs-2 fw-bold text-warning">R$ {{ number_format($totalFaturamento, 2, ',', '.') }}</p>
+                <a href="{{ route('relatorios.geral') }}" target="_blank" class="btn btn-sm btn-warning">Relatório</a>
             </div>
         </div>
     </div>
+    @endif
 </div>
 
 <div class="row mb-4">
@@ -81,7 +97,7 @@
     <div class="col-md-6">
         <div class="card shadow-sm">
             <div class="card-header">
-                <h5 class="card-title mb-0">Senhas por Vaqueiro</h5>
+                <h5 class="card-title mb-0">Senhas por Categoria</h5>
             </div>
             <div class="card-body">
                 <canvas id="senhasChart"></canvas>
@@ -89,78 +105,77 @@
         </div>
     </div>
 </div>
-
-<div class="row">
-    <div class="col-12">
-        <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <h5 class="card-title">Ações rápidas</h5>
-                <div class="btn-group" role="group" aria-label="Acoes rápidas">
-                    <a href="{{ route('competidores.create') }}" class="btn btn-outline-primary">Novo Competidor</a>
-                    <a href="{{ route('inscricoes.create') }}" class="btn btn-outline-success">Nova Inscrição</a>
-                    <a href="{{ route('senhas.create') }}" class="btn btn-outline-success">Nova Senha</a>
-                    <a href="{{ route('relatorios.geral') }}" target="_blank" class="btn btn-outline-info">Gerar Relatório Financeiro (PDF)</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 @endsection
 
 @section('scripts')
-<script src="{{ asset('js/chart.min.js') }}"></script>
+<script src="{{ asset('js/chart.min.js') }}?v={{ time() }}"></script>
 <script>
-    // QR Code para abrir a URL atual no celular
-    const mobileUrl = window.location.origin;
-    const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(mobileUrl)}`;
-    const qrImg = document.getElementById('dashboardQrCode');
-    const qrLink = document.getElementById('dashboardQrLink');
-    qrImg.src = qrImageUrl;
-    qrLink.href = mobileUrl;
+</script>
 
-    // Gráfico de pagamentos
-    const ctxPagamentos = document.getElementById('pagamentosChart').getContext('2d');
-    const pagamentosData = @json($pagamentos);
-    new Chart(ctxPagamentos, {
-        type: 'pie',
-        data: {
-            labels: Object.keys(pagamentosData),
-            datasets: [{
-                data: Object.values(pagamentosData),
-                backgroundColor: ['#007bff', '#28a745', '#ffc107', '#dc3545'],
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                }
+<script>
+    // Configuração isolada dos gráficos com tratamento de erros completo
+    document.addEventListener("DOMContentLoaded", function() {
+        // Gráfico de pagamentos
+        try {
+            const chartElement = document.getElementById('pagamentosChart');
+            if (chartElement) {
+                const ctxPagamentos = chartElement.getContext('2d');
+                const pagamentosData = @json($pagamentos);
+                new Chart(ctxPagamentos, {
+                    type: 'pie',
+                    data: {
+                        labels: Object.keys(pagamentosData),
+                        datasets: [{
+                            data: Object.values(pagamentosData),
+                            backgroundColor: ['#007bff', '#28a745', '#ffc107', '#dc3545'],
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                            }
+                        }
+                    }
+                });
             }
+        } catch (e) {
+            console.error("Erro no gráfico de pagamentos:", e);
         }
-    });
 
-    // Gráfico de senhas por vaqueiro
-    const ctxSenhas = document.getElementById('senhasChart').getContext('2d');
-    const senhasData = @json($senhasPorVaqueiro);
-    new Chart(ctxSenhas, {
-        type: 'bar',
-        data: {
-            labels: Object.keys(senhasData),
-            datasets: [{
-                label: 'Senhas',
-                data: Object.values(senhasData),
-                backgroundColor: '#17a2b8',
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
+        // Gráfico de senhas por categoria
+        try {
+            const chartElement = document.getElementById('senhasChart');
+            if (chartElement) {
+                const ctxSenhas = chartElement.getContext('2d');
+                const senhasData = @json($senhasPorCategoria);
+                new Chart(ctxSenhas, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(senhasData),
+                        datasets: [{
+                            label: 'Quantidade de Senhas',
+                            data: Object.values(senhasData),
+                            backgroundColor: ['#ffc107', '#17a2b8', '#fd7e14', '#20c997'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
             }
+        } catch (e) {
+            console.error("Erro no gráfico de senhas:", e);
         }
     });
 </script>

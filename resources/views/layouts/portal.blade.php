@@ -11,20 +11,19 @@
     
     <style>
         :root {
-            /* Premium Emerald & Deep Space Theme */
-            --primary: #10b981;       /* Emerald */
-            --primary-glow: rgba(16, 185, 129, 0.4);
-            --primary-dark: #059669;
-            --accent: #f59e0b;        /* Gold */
-            --bg-base: #020617;       /* Deep slate/black */
-            --bg-gradient: radial-gradient(circle at top right, #0f172a, #020617);
+            /* Premium Rustic Vaquejada & Sunset Theme */
+            --primary: #d97706;       /* Sunset Gold */
+            --primary-glow: rgba(217, 119, 6, 0.35);
+            --primary-dark: #b45309;
+            --accent: #fbbf24;        /* Sand Gold */
+            --bg-base: #050200;       /* Dark Earth/Clay */
             
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            --glass-bg: rgba(24, 10, 2, 0.65);
+            --glass-border: rgba(217, 119, 6, 0.18);
+            --glass-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6);
             
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            --text-main: #fffbeb;     /* Sand text */
+            --text-muted: #fed7aa;    /* Sunset light text */
             --danger: #ef4444;
             --warning: #f59e0b;
             --success: #10b981;
@@ -37,7 +36,10 @@
         }
 
         body {
-            background: var(--bg-gradient);
+            background: linear-gradient(185deg, rgba(24, 10, 2, 0.94) 0%, rgba(5, 2, 0, 0.97) 100%), url('/vaquejada_bg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             background-attachment: fixed;
             color: var(--text-main);
             min-height: 100vh;
@@ -48,31 +50,29 @@
             overflow-x: hidden;
         }
 
-        /* Abstract Background Elements */
+        /* Efeito de Poeira/Sunset Dourado na Arena */
+        .dust-overlay {
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(217, 119, 6, 0.02) 1px, transparent 0);
+            background-size: 32px 32px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Brilho suave no topo */
         body::before {
             content: '';
             position: absolute;
-            top: -20%;
-            left: -10%;
-            width: 50%;
-            height: 50%;
-            background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
-            filter: blur(100px);
+            top: -10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(217, 119, 6, 0.12) 0%, transparent 70%);
+            filter: blur(80px);
             z-index: -1;
-            opacity: 0.5;
-        }
-
-        body::after {
-            content: '';
-            position: absolute;
-            bottom: -20%;
-            right: -10%;
-            width: 50%;
-            height: 50%;
-            background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%);
-            filter: blur(100px);
-            z-index: -1;
-            opacity: 0.5;
+            pointer-events: none;
         }
 
         h1, h2, h3, h4, h5, h6 {
@@ -352,6 +352,7 @@
     </style>
 </head>
 <body>
+    <div class="dust-overlay"></div>
 
     <nav class="navbar">
         <a href="{{ route('portal.dashboard') }}" class="navbar-brand">
@@ -390,6 +391,15 @@
 
         @yield('content')
     </main>
+
+    <footer style="text-align: center; padding: 2rem 1.5rem; margin-top: auto; border-top: 1px solid var(--glass-border); background: rgba(5, 2, 0, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
+        <p style="font-size: 0.85rem; color: var(--text-muted); font-family: 'Inter', sans-serif;">
+            &copy; {{ date('Y') }} {{ \App\Models\Setting::getValue('parque.name', 'Portal do Vaqueiro') }}. Todos os direitos reservados.
+        </p>
+        <p style="font-size: 0.75rem; margin-top: 0.5rem; color: rgba(253, 224, 71, 0.6); font-family: 'Inter', sans-serif;">
+            Desenvolvido por <a href="https://instagram.com/emanuelxenos" target="_blank" style="color: var(--accent); text-decoration: none; font-weight: 600; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--accent)'">Emanuel Xenos</a>
+        </p>
+    </footer>
 
     @stack('scripts')
 </body>

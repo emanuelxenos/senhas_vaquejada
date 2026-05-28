@@ -404,7 +404,7 @@
                         </a>
                     </li>
                     <li class="menu-item">
-                        <a href="{{ route('senhas.index') }}" class="menu-link {{ request()->routeIs('senhas*') ? 'active' : '' }}">
+                        <a href="{{ route('senhas.index') }}" class="menu-link {{ (request()->routeIs('senhas*') && !request()->routeIs('senhas.create')) ? 'active' : '' }}">
                             <i class="fas fa-hashtag menu-icon"></i>
                             <span class="menu-label">Senhas</span>
                         </a>
@@ -419,7 +419,7 @@
                 <ul style="list-style: none; padding: 0; margin: 0;">
                     @can('manage-cadastros')
                     <li class="menu-item">
-                        <a href="{{ route('senhas.create') }}" class="menu-link">
+                        <a href="{{ route('senhas.create') }}" class="menu-link {{ request()->routeIs('senhas.create') ? 'active' : '' }}">
                             <i class="fas fa-plus-circle menu-icon"></i>
                             <span class="menu-label">Cadastrar Senhas</span>
                         </a>

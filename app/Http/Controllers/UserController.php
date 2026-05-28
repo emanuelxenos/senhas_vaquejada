@@ -14,7 +14,9 @@ class UserController extends Controller
     {
         Gate::authorize('manage-settings');
         
-        $users = User::orderBy('name')->paginate(15);
+        $users = User::whereIn('role', ['admin', 'secretario', 'locutor'])
+            ->orderBy('name')
+            ->paginate(15);
         
         return view('users.index', compact('users'));
     }

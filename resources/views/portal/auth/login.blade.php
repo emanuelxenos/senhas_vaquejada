@@ -3,7 +3,7 @@
 @section('content')
 <div class="card" style="max-width: 420px; margin: 4rem auto; padding: 2.5rem;">
     <div class="card-header text-center">
-        <div style="width: 64px; height: 64px; background: rgba(16, 185, 129, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; border: 1px solid rgba(16, 185, 129, 0.2);">
+        <div style="width: 64px; height: 64px; background: var(--primary-glow); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; border: 1px solid var(--glass-border);">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary)"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
         </div>
         <h1 class="card-title glow-text">Acesse o Portal</h1>
