@@ -40,6 +40,7 @@
                 <thead class="table-light">
                     <tr>
                         <th>Dupla</th>
+                        <th>Categoria</th>
                         <th>Forma de Pagamento</th>
                         <th>Valor Total</th>
                         <th>Status</th>
@@ -54,6 +55,9 @@
                             <td>
                                 <strong>{{ $inscricao->vaqueiro->nome }}</strong><br>
                                 <small class="text-muted">com {{ $inscricao->bateEsteira->nome }}</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{ $inscricao->categoria->nome ?? 'N/A' }}</span>
                             </td>
                             <td>{{ $inscricao->forma_pagamento }}</td>
                             <td>R$ {{ number_format($inscricao->valor_total, 2, ',', '.') }}</td>

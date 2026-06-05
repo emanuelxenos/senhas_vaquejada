@@ -356,7 +356,12 @@
 
     <nav class="navbar">
         <a href="{{ route('portal.dashboard') }}" class="navbar-brand">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary)"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" x2="4" y1="22" y2="15"></line></svg>
+            @php $logo = \App\Models\Setting::getValue('parque.logo') @endphp
+            @if(!empty($logo))
+                <img src="{{ asset($logo) }}" alt="Logo" style="max-height: 40px; width: auto; border-radius: 6px;">
+            @else
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary)"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" x2="4" y1="22" y2="15"></line></svg>
+            @endif
             <span>{{ \App\Models\Setting::getValue('parque.name', 'Portal do Vaqueiro') }}</span>
         </a>
         

@@ -33,6 +33,19 @@
                         </small>
                     </div>
 
+                    <div class="mb-4">
+                        <label for="categoria_id" class="form-label fw-bold">Categoria</label>
+                        <select class="form-select form-select-lg" id="categoria_id" name="categoria_id">
+                            <option value="todos" selected>Todas as Categorias</option>
+                            @foreach($categorias as $categoria)
+                                <option value="{{ $categoria->id }}">{{ $categoria->nome }}</option>
+                            @endforeach
+                        </select>
+                        <small class="text-muted d-block mt-2">
+                            <i class="fas fa-info-circle"></i> Filtre as senhas de uma categoria específica.
+                        </small>
+                    </div>
+
                     <div class="d-grid">
                         <button type="submit" class="btn btn-primary btn-lg">
                             <i class="fas fa-file-pdf me-2"></i> Gerar PDF

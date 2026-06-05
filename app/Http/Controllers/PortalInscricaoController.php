@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Competidor;
 use App\Models\Inscricao;
 use App\Models\Setting;
+use App\Models\Categoria;
+use App\Models\Senha;
 use App\Services\Pagamento\AsaasGateway;
 use App\Services\Pagamento\PagSeguroGateway;
 use Illuminate\Http\Request;
@@ -30,7 +32,7 @@ class PortalInscricaoController extends Controller
         }
 
         $inscricoes = $user->competidor->inscricoesComoVaqueiro()
-            ->with(['bateEsteira'])
+            ->with(['bateEsteira', 'categoria'])
             ->withCount(['senhas' => function($q) {
                 $q->where('status', '!=', 'cancelado');
             }])
@@ -47,14 +49,12 @@ class PortalInscricaoController extends Controller
             abort(403, 'Acesso restrito a vaqueiros.');
         }
 
-        $precoSenha = Setting::getValue('parque.preco_senha', '100.00');
+        $categorias = Categoria::orderBy('nome')->get();
         
-        // Retornar os competidores existentes para auto-complete/seleção
         $competidores = Competidor::where('id', '!=', $user->competidor->id)
                                   ->orderBy('nome')
                                   ->get()
                                   ->map(function ($comp) {
-                                      // Ocultar CPF (ex: 123.***.***-00)
                                       if (preg_match('/^(\d{3})\.\d{3}\.\d{3}-(\d{2})$/', $comp->cpf, $matches)) {
                                           $comp->cpf_oculto = $matches[1] . '.***.***-' . $matches[2];
                                       } else {
@@ -63,7 +63,7 @@ class PortalInscricaoController extends Controller
                                       return $comp;
                                   });
 
-        return view('portal.inscricoes.create', compact('precoSenha', 'competidores'));
+        return view('portal.inscricoes.create', compact('categorias', 'competidores'));
     }
 
     public function store(Request $request)
@@ -74,19 +74,25 @@ class PortalInscricaoController extends Controller
         }
 
         $request->validate([
+            'categoria_id' => 'required|exists:categorias,id',
             'bate_esteira_id' => 'nullable|exists:competidores,id',
             'novo_bate_esteira_nome' => 'required_without:bate_esteira_id|nullable|string|max:255',
             'novo_bate_esteira_cpf' => 'required_without:bate_esteira_id|nullable|string|max:20',
             'novo_bate_esteira_cidade' => 'required_without:bate_esteira_id|nullable|string|max:255',
             'novo_bate_esteira_representacao' => 'nullable|string|max:255',
             'quantidade_senhas' => 'required|integer|min:1|max:50',
-            'valor_total' => 'required|numeric|min:0',
         ]);
+
+        $categoria = Categoria::findOrFail($request->categoria_id);
+        if ($request->quantidade_senhas > $categoria->limite_senhas_por_vaqueiro) {
+            return back()->withErrors(['quantidade_senhas' => "O limite de senhas para a categoria {$categoria->nome} é de no máximo {$categoria->limite_senhas_por_vaqueiro}."])->withInput();
+        }
+
+        $valorTotal = $request->quantidade_senhas * $categoria->preco_senha;
 
         $bateEsteiraId = $request->bate_esteira_id;
 
         if (!$bateEsteiraId) {
-            // Criar novo competidor para ser o bate esteira
             $novoBateEsteira = Competidor::create([
                 'nome' => $request->novo_bate_esteira_nome,
                 'cpf' => $request->novo_bate_esteira_cpf,
@@ -97,11 +103,12 @@ class PortalInscricaoController extends Controller
         }
 
         $inscricao = Inscricao::create([
+            'categoria_id' => $categoria->id,
             'vaqueiro_id' => $user->competidor->id,
             'bate_esteira_id' => $bateEsteiraId,
             'quantidade_senhas' => $request->quantidade_senhas,
             'forma_pagamento' => 'Pix (Gateway)',
-            'valor_total' => $request->valor_total,
+            'valor_total' => $valorTotal,
             'status_pagamento' => 'pendente',
         ]);
 
@@ -109,7 +116,7 @@ class PortalInscricaoController extends Controller
         if (in_array($provider, ['asaas', 'pagseguro'])) {
             try {
                 $gateway = $this->getGatewayInstance($provider);
-                $pixData = $gateway->gerarPix($inscricao, (float)$request->valor_total);
+                $pixData = $gateway->gerarPix($inscricao, (float)$valorTotal);
                 
                 $inscricao->update([
                     'gateway_provider' => $provider,
@@ -185,13 +192,19 @@ class PortalInscricaoController extends Controller
         $senhasCadastradas = $inscricao->senhas->count();
         $restantes = max($inscricao->quantidade_senhas - $senhasCadastradas, 0);
 
-        // Obter todas as senhas já vendidas e ativas no evento para evitar conflito
-        $senhasVendidas = \App\Models\Senha::where('status', '!=', 'cancelado')
+        $senhasVendidas = Senha::where('status', '!=', 'cancelado')
             ->orderByRaw('CAST(numero_senha AS UNSIGNED) ASC')
             ->pluck('numero_senha')
             ->toArray();
 
-        return view('portal.inscricoes.senhas', compact('inscricao', 'restantes', 'senhasVendidas'));
+        // Verificar se boi_tv está liberado por data
+        $dataLimiteBoiTv = Setting::getValue('senha.data_limite_boi_tv', '');
+        $permitirBoiTv = true;
+        if ($dataLimiteBoiTv && now()->format('Y-m-d') > $dataLimiteBoiTv) {
+            $permitirBoiTv = false;
+        }
+
+        return view('portal.inscricoes.senhas', compact('inscricao', 'restantes', 'senhasVendidas', 'permitirBoiTv'));
     }
 
     public function storeSenhas(Request $request, Inscricao $inscricao)
@@ -233,6 +246,17 @@ class PortalInscricaoController extends Controller
             return back()->withErrors(['senhas' => "Você precisa cadastrar exatamente {$restantes} senha(s)."])->withInput();
         }
 
+        // Validar data limite de Boi TV
+        $dataLimiteBoiTv = Setting::getValue('senha.data_limite_boi_tv', '');
+        $permitirBoiTv = true;
+        if ($dataLimiteBoiTv && now()->format('Y-m-d') > $dataLimiteBoiTv) {
+            $permitirBoiTv = false;
+        }
+
+        if (!$permitirBoiTv && in_array('boi_tv', $tipos)) {
+            return back()->withErrors(['tipos' => 'A data limite para a compra online da senha tipo Boi TV já expirou.'])->withInput();
+        }
+
         validator(
             [
                 'senhas' => $senhas,
@@ -256,9 +280,10 @@ class PortalInscricaoController extends Controller
             ]
         )->validate();
 
+        // O evento "created" em Senha criará automaticamente as corridas no BD!
         foreach ($senhas as $index => $numero) {
             $tipo = $tipos[$index] ?? 'amador';
-            \App\Models\Senha::create([
+            Senha::create([
                 'inscricao_id' => $inscricao->id,
                 'numero_senha' => $numero,
                 'status' => 'pendente',

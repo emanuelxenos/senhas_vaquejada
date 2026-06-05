@@ -68,13 +68,27 @@
 </head>
 <body>
 
+    @php
+        $logoPath = \App\Models\Setting::getValue('parque.logo');
+        $logoBase64 = null;
+        if ($logoPath && file_exists(public_path($logoPath))) {
+            $logoData = base64_encode(file_get_contents(public_path($logoPath)));
+            $logoBase64 = 'data:image/' . pathinfo(public_path($logoPath), PATHINFO_EXTENSION) . ';base64,' . $logoData;
+        }
+    @endphp
+
     <div class="header">
-        <h1>Relatório de Senhas</h1>
-        <p>Sistema de Gerenciamento de Vaquejada</p>
+        @if($logoBase64)
+            <img src="{{ $logoBase64 }}" style="max-height: 60px; float: right; margin-top: -10px;">
+        @endif
+        <h1 style="text-align: left; margin: 0;">Relatório de Senhas</h1>
+        <p style="text-align: left; margin: 5px 0 0 0;">Sistema de Gerenciamento de Vaquejada</p>
+        <div style="clear: both;"></div>
     </div>
 
     <div class="summary">
         <p><strong>Filtro de Status:</strong> {{ ucfirst(str_replace('_', ' ', $status)) }}</p>
+        <p><strong>Categoria:</strong> {{ $categoriaSelecionada ? $categoriaSelecionada->nome : 'Todas' }}</p>
         <p><strong>Total de Senhas Listadas:</strong> {{ $totalSenhas }}</p>
     </div>
 
@@ -82,9 +96,10 @@
         <thead>
             <tr>
                 <th width="15%">Senha</th>
-                <th width="50%">Vaqueiro / Esteira</th>
-                <th width="20%">Status</th>
-                <th width="15%">Obs</th>
+                <th width="40%">Vaqueiro / Esteira</th>
+                <th width="20%">Categoria / Tipo</th>
+                <th width="15%">Status</th>
+                <th width="10%">Obs</th>
             </tr>
         </thead>
         <tbody>
@@ -96,12 +111,16 @@
                         ({{ $senha->inscricao->vaqueiro->representacao }} / {{ $senha->inscricao->vaqueiro->cidade }})<br>
                         <em>Esteira: {{ $senha->inscricao->bateEsteira->nome }}</em>
                     </td>
+                    <td>
+                        <strong>Cat:</strong> {{ $senha->inscricao->categoria ? $senha->inscricao->categoria->nome : 'N/A' }}<br>
+                        <strong>Tipo:</strong> {{ ucfirst(str_replace('_', ' ', $senha->tipo)) }}
+                    </td>
                     <td class="status">{{ str_replace('_', ' ', $senha->status) }}</td>
                     <td></td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" style="text-align: center;">Nenhuma senha encontrada para este filtro.</td>
+                    <td colspan="5" style="text-align: center;">Nenhuma senha encontrada para este filtro.</td>
                 </tr>
             @endforelse
         </tbody>

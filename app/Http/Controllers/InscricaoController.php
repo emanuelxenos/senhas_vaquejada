@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Competidor;
 use App\Models\Inscricao;
 use App\Models\Setting;
+use App\Models\Categoria;
 use App\Services\Pagamento\AsaasGateway;
 use App\Services\Pagamento\PagSeguroGateway;
 use Illuminate\Http\Request;
@@ -25,7 +26,7 @@ class InscricaoController extends Controller
     {
         $search = trim((string) $request->query('q', ''));
 
-        $query = Inscricao::with(['vaqueiro', 'bateEsteira'])
+        $query = Inscricao::with(['vaqueiro', 'bateEsteira', 'categoria'])
             ->withCount(['senhas' => function($q) {
                 $q->where('status', '!=', 'cancelado');
             }]);
@@ -51,14 +52,15 @@ class InscricaoController extends Controller
     {
         Gate::authorize('manage-cadastros');
         $competidores = Competidor::orderBy('nome')->get();
-        $precoSenha = \App\Models\Setting::getValue('parque.preco_senha', '100.00');
-        return view('inscricoes.create', compact('competidores', 'precoSenha'));
+        $categorias = Categoria::orderBy('nome')->get();
+        return view('inscricoes.create', compact('competidores', 'categorias'));
     }
 
     public function store(Request $request)
     {
         Gate::authorize('manage-cadastros');
         $data = $request->validate([
+            'categoria_id' => 'required|exists:categorias,id',
             'vaqueiro_id' => 'required|exists:competidores,id',
             'bate_esteira_id' => 'required|exists:competidores,id|different:vaqueiro_id',
             'quantidade_senhas' => 'required|integer|min:1|max:50',
@@ -66,6 +68,11 @@ class InscricaoController extends Controller
             'valor_total' => 'required|numeric|min:0',
             'status_pagamento' => 'required|in:pendente,pago,cancelado',
         ]);
+
+        $categoria = Categoria::findOrFail($data['categoria_id']);
+        if ($data['quantidade_senhas'] > $categoria->limite_senhas_por_vaqueiro) {
+            return back()->withErrors(['quantidade_senhas' => "O limite máximo para a categoria {$categoria->nome} é de {$categoria->limite_senhas_por_vaqueiro} senha(s)."])->withInput();
+        }
 
         $inscricao = Inscricao::create($data);
 
@@ -105,7 +112,7 @@ class InscricaoController extends Controller
     public function reciboTermico(Inscricao $inscricao)
     {
         Gate::authorize('manage-cadastros');
-        $inscricao->load(['vaqueiro', 'bateEsteira', 'senhas']);
+        $inscricao->load(['vaqueiro', 'bateEsteira', 'senhas', 'categoria']);
         
         return view('inscricoes.termica', compact('inscricao'));
     }
@@ -171,14 +178,15 @@ class InscricaoController extends Controller
     {
         Gate::authorize('manage-cadastros');
         $competidores = Competidor::orderBy('nome')->get();
-        $precoSenha = \App\Models\Setting::getValue('parque.preco_senha', '100.00');
-        return view('inscricoes.edit', compact('inscricao', 'competidores', 'precoSenha'));
+        $categorias = Categoria::orderBy('nome')->get();
+        return view('inscricoes.edit', compact('inscricao', 'competidores', 'categorias'));
     }
 
     public function update(Request $request, Inscricao $inscricao)
     {
         Gate::authorize('manage-cadastros');
         $data = $request->validate([
+            'categoria_id' => 'required|exists:categorias,id',
             'vaqueiro_id' => 'required|exists:competidores,id',
             'bate_esteira_id' => 'required|exists:competidores,id|different:vaqueiro_id',
             'quantidade_senhas' => 'required|integer|min:1|max:50',
@@ -186,6 +194,11 @@ class InscricaoController extends Controller
             'valor_total' => 'required|numeric|min:0',
             'status_pagamento' => 'required|in:pendente,pago,cancelado',
         ]);
+
+        $categoria = Categoria::findOrFail($data['categoria_id']);
+        if ($data['quantidade_senhas'] > $categoria->limite_senhas_por_vaqueiro) {
+            return back()->withErrors(['quantidade_senhas' => "O limite máximo para a categoria {$categoria->nome} é de {$categoria->limite_senhas_por_vaqueiro} senha(s)."])->withInput();
+        }
 
         $inscricao->update($data);
 
@@ -196,7 +209,6 @@ class InscricaoController extends Controller
     {
         Gate::authorize('manage-cadastros');
         $inscricao->delete();
-        // Senhas::where('inscricao_id', $inscricao->id)->delete();
         return redirect()->route('inscricoes.index')->with('sucesso', 'Inscrição excluída com sucesso.');
     }
 }

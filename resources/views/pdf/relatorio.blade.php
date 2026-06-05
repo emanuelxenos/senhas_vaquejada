@@ -233,11 +233,22 @@
 </head>
 <body>
     <div class="container">
+        @php
+            $logoPath = \App\Models\Setting::getValue('parque.logo');
+            $logoBase64 = null;
+            if ($logoPath && file_exists(public_path($logoPath))) {
+                $logoData = base64_encode(file_get_contents(public_path($logoPath)));
+                $logoBase64 = 'data:image/' . pathinfo(public_path($logoPath), PATHINFO_EXTENSION) . ';base64,' . $logoData;
+            }
+        @endphp
         <!-- CABEÇALHO -->
-        <div class="header">
-            <div class="header-title">RELATÓRIO DE INSCRIÇÕES E SENHAS</div>
-            <div class="header-subtitle">{{ config('parque.name') }}</div>
-            <div class="header-date">Gerado em {{ $dataRelatorio->format('d/m/Y às H:i:s') }}</div>
+        <div class="header" style="position: relative; min-height: 60px;">
+            @if($logoBase64)
+                <img src="{{ $logoBase64 }}" style="max-height: 50px; position: absolute; right: 0; top: 0;">
+            @endif
+            <div class="header-title" style="padding-right: 60px; text-align: left;">RELATÓRIO DE INSCRIÇÕES E SENHAS</div>
+            <div class="header-subtitle" style="padding-right: 60px; text-align: left;">{{ \App\Models\Setting::getValue('parque.name', config('parque.name')) }}</div>
+            <div class="header-date" style="text-align: left;">Gerado em {{ $dataRelatorio->format('d/m/Y às H:i:s') }}</div>
         </div>
 
         <!-- RESUMO EXECUTIVO -->
@@ -269,7 +280,8 @@
                 <tr>
                     <th style="width: 20%;">Dupla</th>
                     <th style="width: 15%;">Representação</th>
-                    <th style="width: 15%;">Pagamento</th>
+                    <th style="width: 12%;">Categoria</th>
+                    <th style="width: 13%;">Pagamento</th>
                     <th style="width: 12%;">Valor</th>
                     <th style="width: 10%;">Status</th>
                     <th style="width: 10%;">Senhas</th>
@@ -281,6 +293,7 @@
                     <tr>
                         <td><strong>{{ $inscricao->vaqueiro->nome }}</strong><br><small>& {{ $inscricao->bateEsteira->nome }}</small></td>
                         <td>{{ $inscricao->vaqueiro->representacao }}</td>
+                        <td>{{ $inscricao->categoria ? $inscricao->categoria->nome : 'N/A' }}</td>
                         <td>{{ ucfirst($inscricao->forma_pagamento) }}</td>
                         <td>R$ {{ number_format($inscricao->valor_total, 2, ',', '.') }}</td>
                         <td style="text-align: center;">
@@ -308,13 +321,13 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" style="text-align: center; color: #999;">Nenhuma inscrição cadastrada</td>
+                        <td colspan="8" style="text-align: center; color: #999;">Nenhuma inscrição cadastrada</td>
                     </tr>
                 @endforelse
             </tbody>
             <tfoot>
                 <tr class="total-row">
-                    <td colspan="3" style="text-align: right;"><strong>TOTAIS:</strong></td>
+                    <td colspan="4" style="text-align: right;"><strong>TOTAIS:</strong></td>
                     <td style="text-align: center;"><strong>R$ {{ number_format($inscricoes->sum('valor_total'), 2, ',', '.') }}</strong></td>
                     <td style="text-align: center;"><strong>{{ $totalInscricoes }}</strong></td>
                     <td style="text-align: center;"><strong>{{ $totalSenhas }}</strong></td>

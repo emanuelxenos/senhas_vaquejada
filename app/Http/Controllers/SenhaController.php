@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Inscricao;
 use App\Models\Senha;
+use App\Models\Corrida;
+use App\Models\Setting;
+use App\Models\Categoria;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -14,8 +17,9 @@ class SenhaController extends Controller
     public function index(Request $request)
     {
         $statusFiltro = $request->query('status', 'todos');
+        $categoriaFiltro = $request->query('categoria_id', 'todas');
 
-        $query = Senha::with('inscricao.vaqueiro', 'inscricao.bateEsteira');
+        $query = Senha::with(['inscricao.vaqueiro', 'inscricao.bateEsteira', 'inscricao.categoria', 'corridas']);
 
         if ($statusFiltro && $statusFiltro !== 'todos') {
             $query->where('status', $statusFiltro);
@@ -23,26 +27,31 @@ class SenhaController extends Controller
             $query->where('status', '!=', 'cancelado');
         }
 
-        $senhas = $query->orderBy('numero_senha')->get();
+        if ($categoriaFiltro && $categoriaFiltro !== 'todas') {
+            $query->whereHas('inscricao', function ($q) use ($categoriaFiltro) {
+                $q->where('categoria_id', $categoriaFiltro);
+            });
+        }
+
+        $senhas = $query->orderByRaw('CAST(numero_senha AS UNSIGNED) ASC')->get();
 
         $total = $senhas->count();
-        return view('senhas.index', compact('senhas', 'total', 'statusFiltro'));
+        $categorias = Categoria::orderBy('nome')->get();
+        return view('senhas.index', compact('senhas', 'total', 'statusFiltro', 'categoriaFiltro', 'categorias'));
     }
 
     public function create()
     {
         Gate::authorize('manage-cadastros');
-        $inscricoes = Inscricao::with(['vaqueiro', 'bateEsteira'])
+        $inscricoes = Inscricao::with(['vaqueiro', 'bateEsteira', 'categoria'])
             ->withCount('senhas')
-            // MySQL não permite usar coluna não agregada em HAVING sem GROUP BY.
-            // Filtra via subquery no WHERE (senhas cadastradas < quantidade contratada).
             ->whereRaw(
                 '(select count(*) from senhas where senhas.inscricao_id = inscricoes.id) < inscricoes.quantidade_senhas'
             )
             ->get();
 
         $senhasVendidas = Senha::where('status', '!=', 'cancelado')
-            ->orderByRaw('CAST(numero_senha AS UNSIGNED) ASC') // Ordenação numérica inteligente
+            ->orderByRaw('CAST(numero_senha AS UNSIGNED) ASC')
             ->pluck('numero_senha')
             ->toArray();
 
@@ -79,14 +88,12 @@ class SenhaController extends Controller
             return redirect()->route('senhas.index')->with('sucesso', 'Esta inscrição já está completa.');
         }
 
-        // Exigir exatamente a quantidade restante (evita “10 inputs vazios” quebrando o cadastro)
         if (count($senhas) !== $restantes) {
             return back()
                 ->withErrors(['senhas' => "Você precisa cadastrar exatamente {$restantes} senha(s) para esta inscrição."])
                 ->withInput();
         }
 
-        // Validar conteúdo/uniqueness depois de filtrar vazios. Ignorar as canceladas.
         validator(
             [
                 'senhas' => $senhas,
@@ -106,6 +113,7 @@ class SenhaController extends Controller
             ]
         )->validate();
 
+        // O model event "created" cuidará de criar as corridas individuais automaticamente!
         foreach ($senhas as $index => $numero) {
             $tipo = $tipos[$index] ?? 'amador';
             Senha::create([
@@ -127,7 +135,7 @@ class SenhaController extends Controller
 
     public function update(Request $request, Senha $senha)
     {
-        Gate::authorize('update-status'); // nova regra que permite locutor
+        Gate::authorize('update-status'); 
 
         $data = $request->validate([
             'numero_senha' => [
@@ -153,8 +161,29 @@ class SenhaController extends Controller
 
         $senha->fill($data);
         $senha->save();
+        $senha->atualizarStatusAutomatico();
 
         return redirect()->route('senhas.index')->with('sucesso', 'Senha atualizada com sucesso.');
+    }
+
+    public function updateCorrida(Request $request, Corrida $corrida)
+    {
+        Gate::authorize('update-status');
+
+        $data = $request->validate([
+            'resultado' => 'required|in:pendente,boi_batido,zero'
+        ]);
+
+        $corrida->update($data);
+
+        $senha = $corrida->senha;
+        $senha->atualizarStatusAutomatico();
+
+        return response()->json([
+            'success' => true,
+            'senha_status' => $senha->status,
+            'corrida_resultado' => $corrida->resultado
+        ]);
     }
 
     public function destroy(Senha $senha)
@@ -177,7 +206,6 @@ class SenhaController extends Controller
     public function relatorio()
     {
         Gate::authorize('view-reports');
-        // Buscar inscrições com contagem de senhas (ignorando canceladas)
         $inscricoes = Inscricao::with(['vaqueiro', 'bateEsteira', 'senhas' => function($query) {
                 $query->where('status', '!=', 'cancelado');
             }])
@@ -187,27 +215,22 @@ class SenhaController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Calculando estatísticas
         $totalInscricoes = $inscricoes->count();
         $totalSenhas = $inscricoes->sum('senhas_count');
 
-        // Contar por tipo de pagamento
         $pagamentoStats = $inscricoes->groupBy('forma_pagamento')
             ->map(function($group) {
                 return $group->count();
             });
 
-        // Status de pagamento
         $pagamentoStatus = $inscricoes->groupBy('status_pagamento')
             ->map(function($group) {
                 return $group->count();
             });
 
-        // Resumo rápido (substitui o conceito antigo de disponível/indisponível)
         $disponiveis = (int) ($pagamentoStatus['pago'] ?? 0);
         $indisponiveis = (int) ($pagamentoStatus['pendente'] ?? 0) + (int) ($pagamentoStatus['cancelado'] ?? 0);
 
-        // Status das senhas
         $senhaStatus = collect();
         foreach ($inscricoes as $inscricao) {
             foreach ($inscricao->senhas as $senha) {
@@ -216,10 +239,8 @@ class SenhaController extends Controller
             }
         }
 
-        // Data do relatório
         $dataRelatorio = now();
 
-        // Passar todos os dados para a view
         $dados = compact(
             'inscricoes',
             'totalInscricoes',

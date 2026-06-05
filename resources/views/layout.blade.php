@@ -470,6 +470,12 @@
                         </a>
                     </li>
                     <li class="menu-item">
+                        <a href="{{ route('categorias.index') }}" class="menu-link {{ request()->routeIs('categorias*') ? 'active' : '' }}">
+                            <i class="fas fa-tags menu-icon"></i>
+                            <span class="menu-label">Categorias</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
                         <a href="{{ route('settings.index') }}" class="menu-link {{ request()->routeIs('settings*') ? 'active' : '' }}">
                             <i class="fas fa-cog menu-icon"></i>
                             <span class="menu-label">Configurações</span>

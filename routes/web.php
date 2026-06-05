@@ -12,6 +12,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\PortalAuthController;
 use App\Http\Controllers\PortalInscricaoController;
+use App\Http\Controllers\CategoriaController;
 
 // Rota home (redirecionador)
 Route::get('/', [RedirectController::class, 'index']);
@@ -80,6 +81,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/senhas/{senha}/edit', [SenhaController::class, 'edit'])->name('senhas.edit');
     Route::put('/senhas/{senha}', [SenhaController::class, 'update'])->name('senhas.update');
     Route::delete('/senhas/{senha}', [SenhaController::class, 'destroy'])->name('senhas.destroy');
+    Route::post('/corridas/{corrida}/update', [SenhaController::class, 'updateCorrida'])->name('corridas.update');
 
     Route::get('/inscricoes/{inscricao}/pdf', [SenhaController::class, 'gerarPdf'])->name('inscricoes.pdf');
 
@@ -97,6 +99,9 @@ Route::middleware('auth')->group(function () {
     // Configurações do sistema
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+
+    // Categorias do sistema
+    Route::resource('categorias', CategoriaController::class)->except(['show', 'create', 'edit']);
 
     // Usuários do sistema (Apenas Admin)
     Route::resource('users', UserController::class)->except(['show']);

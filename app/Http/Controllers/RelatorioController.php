@@ -83,26 +83,33 @@ class RelatorioController extends Controller
     {
         // Administradores e Secretários podem gerar
         Gate::authorize('manage-cadastros');
-        return view('relatorios.inscricoes');
+        $categorias = \App\Models\Categoria::orderBy('nome', 'asc')->get();
+        return view('relatorios.inscricoes', compact('categorias'));
     }
 
     public function inscricoesPdf(Request $request)
     {
         Gate::authorize('manage-cadastros');
         $status = $request->input('status_pagamento', 'todos');
+        $categoriaId = $request->input('categoria_id', 'todos');
 
-        $query = Inscricao::with(['vaqueiro', 'bateEsteira'])->withCount('senhas');
+        $query = Inscricao::with(['vaqueiro', 'bateEsteira', 'categoria'])->withCount('senhas');
 
         if ($status !== 'todos') {
             $query->where('status_pagamento', $status);
+        }
+
+        if ($categoriaId !== 'todos') {
+            $query->where('categoria_id', $categoriaId);
         }
 
         $inscricoes = $query->orderBy('created_at', 'desc')->get();
         $totalValor = $inscricoes->sum('valor_total');
         
         $dataRelatorio = now();
+        $categoriaSelecionada = $categoriaId !== 'todos' ? \App\Models\Categoria::find($categoriaId) : null;
 
-        $pdf = PDF::loadView('pdf.relatorio_inscricoes', compact('inscricoes', 'totalValor', 'status', 'dataRelatorio'));
+        $pdf = PDF::loadView('pdf.relatorio_inscricoes', compact('inscricoes', 'totalValor', 'status', 'dataRelatorio', 'categoriaSelecionada'));
         $pdf->setPaper('A4', 'portrait');
 
         return $pdf->stream('Inscricoes_' . ucfirst($status) . '_' . now()->format('d_m_Y') . '.pdf');
@@ -114,25 +121,34 @@ class RelatorioController extends Controller
     public function senhasForm()
     {
         Gate::authorize('manage-cadastros');
-        return view('relatorios.senhas');
+        $categorias = \App\Models\Categoria::orderBy('nome', 'asc')->get();
+        return view('relatorios.senhas', compact('categorias'));
     }
 
     public function senhasPdf(Request $request)
     {
         Gate::authorize('manage-cadastros');
         $status = $request->input('status_senha', 'todos');
+        $categoriaId = $request->input('categoria_id', 'todos');
 
-        $query = Senha::with(['inscricao.vaqueiro', 'inscricao.bateEsteira']);
+        $query = Senha::with(['inscricao.vaqueiro', 'inscricao.bateEsteira', 'inscricao.categoria']);
 
         if ($status !== 'todos') {
             $query->where('status', $status);
         }
 
+        if ($categoriaId !== 'todos') {
+            $query->whereHas('inscricao', function($q) use ($categoriaId) {
+                $q->where('categoria_id', $categoriaId);
+            });
+        }
+
         $senhas = $query->orderBy('numero_senha', 'asc')->get();
         $totalSenhas = $senhas->count();
         $dataRelatorio = now();
+        $categoriaSelecionada = $categoriaId !== 'todos' ? \App\Models\Categoria::find($categoriaId) : null;
 
-        $pdf = PDF::loadView('pdf.relatorio_senhas', compact('senhas', 'totalSenhas', 'status', 'dataRelatorio'));
+        $pdf = PDF::loadView('pdf.relatorio_senhas', compact('senhas', 'totalSenhas', 'status', 'dataRelatorio', 'categoriaSelecionada'));
         $pdf->setPaper('A4', 'portrait');
 
         return $pdf->stream('Senhas_' . ucfirst(str_replace('_', '', $status)) . '_' . now()->format('d_m_Y') . '.pdf');

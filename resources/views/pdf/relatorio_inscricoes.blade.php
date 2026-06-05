@@ -65,13 +65,27 @@
 </head>
 <body>
 
+    @php
+        $logoPath = \App\Models\Setting::getValue('parque.logo');
+        $logoBase64 = null;
+        if ($logoPath && file_exists(public_path($logoPath))) {
+            $logoData = base64_encode(file_get_contents(public_path($logoPath)));
+            $logoBase64 = 'data:image/' . pathinfo(public_path($logoPath), PATHINFO_EXTENSION) . ';base64,' . $logoData;
+        }
+    @endphp
+
     <div class="header">
-        <h1>Relatório de Inscrições</h1>
-        <p>Sistema de Gerenciamento de Vaquejada</p>
+        @if($logoBase64)
+            <img src="{{ $logoBase64 }}" style="max-height: 60px; float: right; margin-top: -10px;">
+        @endif
+        <h1 style="text-align: left; margin: 0;">Relatório de Inscrições</h1>
+        <p style="text-align: left; margin: 5px 0 0 0;">Sistema de Gerenciamento de Vaquejada</p>
+        <div style="clear: both;"></div>
     </div>
 
     <div class="summary">
         <p><strong>Filtro de Status:</strong> {{ ucfirst($status) }}</p>
+        <p><strong>Categoria:</strong> {{ $categoriaSelecionada ? $categoriaSelecionada->nome : 'Todas' }}</p>
         <p><strong>Total de Inscrições:</strong> {{ $inscricoes->count() }}</p>
         <p><strong>Valor Total Previsto:</strong> R$ {{ number_format($totalValor, 2, ',', '.') }}</p>
     </div>
@@ -81,9 +95,10 @@
             <tr>
                 <th width="10%">ID</th>
                 <th width="35%">Vaqueiro / Bate-Esteira</th>
+                <th width="20%">Categoria</th>
                 <th width="15%">Valor</th>
-                <th width="20%">Pgt. Forma</th>
-                <th width="20%">Pgt. Status</th>
+                <th width="10%">Pgt. Forma</th>
+                <th width="10%">Pgt. Status</th>
             </tr>
         </thead>
         <tbody>
@@ -94,13 +109,14 @@
                         <strong>V:</strong >{{ $inscricao->vaqueiro->nome }}<br>
                         <strong>E:</strong >{{ $inscricao->bateEsteira->nome }}
                     </td>
+                    <td>{{ $inscricao->categoria ? $inscricao->categoria->nome : 'N/A' }}</td>
                     <td>R$ {{ number_format($inscricao->valor_total, 2, ',', '.') }}</td>
                     <td>{{ ucfirst($inscricao->forma_pagamento) }}</td>
                     <td class="status-{{ $inscricao->status_pagamento }}">{{ ucfirst($inscricao->status_pagamento) }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" style="text-align: center;">Nenhuma inscrição encontrada para o filtro selecionado.</td>
+                    <td colspan="6" style="text-align: center;">Nenhuma inscrição encontrada para o filtro selecionado.</td>
                 </tr>
             @endforelse
         </tbody>

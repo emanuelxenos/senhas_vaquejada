@@ -10,6 +10,7 @@ class Inscricao extends Model
 {
     protected $table = 'inscricoes';
     protected $fillable = [
+        'categoria_id',
         'vaqueiro_id',
         'bate_esteira_id',
         'quantidade_senhas',
@@ -26,7 +27,16 @@ class Inscricao extends Model
         'valor_total' => 'decimal:2',
         'quantidade_senhas' => 'integer',
         'status_pagamento' => 'string',
+        'categoria_id' => 'integer',
     ];
+
+    /**
+     * A categoria associada a esta inscrição
+     */
+    public function categoria(): BelongsTo
+    {
+        return $this->belongsTo(Categoria::class);
+    }
 
     /**
      * O competidor que é o vaqueiro nesta inscrição

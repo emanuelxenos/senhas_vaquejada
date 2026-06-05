@@ -10,13 +10,25 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <form method="POST" action="{{ route('settings.update') }}">
+    <form method="POST" action="{{ route('settings.update') }}" enctype="multipart/form-data">
         @csrf
 
         <div class="mb-3">
             <label class="form-label" for="parque-name">Nome do Parque</label>
             <input id="parque-name" name="parque[name]" type="text" class="form-control @error('parque.name') is-invalid @enderror" value="{{ old('parque.name', $config['parque.name']) }}" required>
             @error('parque.name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="parque-logo">Logotipo do Parque</label>
+            <input id="parque-logo" name="parque_logo" type="file" class="form-control @error('parque_logo') is-invalid @enderror">
+            <small class="text-muted">Formatos aceitos: JPG, PNG, GIF, SVG, WEBP (Max 2MB).</small>
+            @if(!empty($config['parque.logo']))
+                <div class="mt-2">
+                    <img src="{{ asset($config['parque.logo']) }}" alt="Logo do Parque" style="max-height: 80px;" class="img-thumbnail">
+                </div>
+            @endif
+            @error('parque_logo')<div class="invalid-feedback">{{ $message }}</div>@enderror
         </div>
 
         <div class="mb-3">
@@ -37,11 +49,40 @@
             @error('parque.contact')<div class="invalid-feedback">{{ $message }}</div>@enderror
         </div>
 
-        <div class="mb-3">
+        <div class="mb-3 d-none">
+            <!-- Desativado pois o preço agora é definido na Categoria -->
             <label class="form-label" for="parque-preco-senha">Preço Padrão da Senha (R$)</label>
-            <input id="parque-preco-senha" name="parque[preco_senha]" type="number" step="0.01" min="0" class="form-control @error('parque.preco_senha') is-invalid @enderror" value="{{ old('parque.preco_senha', $config['parque.preco_senha']) }}" required>
-            <small class="text-muted">Este valor será sugerido automaticamente na tela do caixa.</small>
-            @error('parque.preco_senha')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            <input id="parque-preco-senha" name="parque[preco_senha]" type="number" step="0.01" min="0" class="form-control" value="{{ old('parque.preco_senha', $config['parque.preco_senha']) }}" required>
+        </div>
+
+        <hr class="my-4">
+        <h4>Regras de Bois e Limites de Senhas</h4>
+        
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label" for="senha-bois-amador">Quantidade de Bois - Amador</label>
+                <input id="senha-bois-amador" name="senha[bois_amador]" type="number" class="form-control @error('senha.bois_amador') is-invalid @enderror" value="{{ old('senha.bois_amador', $config['senha.bois_amador']) }}" required>
+                @error('senha.bois_amador')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+            
+            <div class="col-md-4 mb-3">
+                <label class="form-label" for="senha-bois-profissional">Quantidade de Bois - Profissional</label>
+                <input id="senha-bois-profissional" name="senha[bois_profissional]" type="number" class="form-control @error('senha.bois_profissional') is-invalid @enderror" value="{{ old('senha.bois_profissional', $config['senha.bois_profissional']) }}" required>
+                @error('senha.bois_profissional')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label class="form-label" for="senha-bois-boi-tv">Quantidade de Bois - Boi TV</label>
+                <input id="senha-bois-boi-tv" name="senha[bois_boi_tv]" type="number" class="form-control @error('senha.bois_boi_tv') is-invalid @enderror" value="{{ old('senha.bois_boi_tv', $config['senha.bois_boi_tv']) }}" required>
+                @error('senha.bois_boi_tv')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="senha-data-limite-boi-tv">Data Limite de Compra Online (Boi TV)</label>
+            <input id="senha-data-limite-boi-tv" name="senha[data_limite_boi_tv]" type="date" class="form-control @error('senha.data_limite_boi_tv') is-invalid @enderror" value="{{ old('senha.data_limite_boi_tv', $config['senha.data_limite_boi_tv']) }}">
+            <small class="text-muted">A partir desta data, o tipo "Boi TV" só poderá ser comprado pela Secretaria/Caixa (ficará oculto no Portal).</small>
+            @error('senha.data_limite_boi_tv')<div class="invalid-feedback">{{ $message }}</div>@enderror
         </div>
 
         <hr class="my-4">

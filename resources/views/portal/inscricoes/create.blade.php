@@ -79,20 +79,31 @@
             <h3 style="color: #fff; font-family: 'Outfit'; font-size: 1.4rem;">Senhas e Pagamento</h3>
         </div>
 
-        <div class="flex flex-mobile-col gap-6 items-center">
+        <div class="form-group">
+            <label class="form-label" for="categoria_id">Categoria *</label>
+            <select name="categoria_id" id="categoria_id" class="form-control" required onchange="recalcularPreco()">
+                <option value="">-- Selecione a Categoria --</option>
+                @foreach($categorias as $categoria)
+                    <option value="{{ $categoria->id }}" data-preco="{{ $categoria->preco_senha }}" data-limite="{{ $categoria->limite_senhas_por_vaqueiro }}" {{ old('categoria_id') == $categoria->id ? 'selected' : '' }}>
+                        {{ $categoria->nome }} (R$ {{ number_format($categoria->preco_senha, 2, ',', '.') }} - Limite: {{ $categoria->limite_senhas_por_vaqueiro }} senhas)
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="flex flex-mobile-col gap-6 items-center mt-4">
             <div class="form-group" style="flex: 1; margin-bottom: 0; width: 100%;">
-                <label class="form-label" for="quantidade_senhas">Quantidade de Senhas (R$ {{ number_format($precoSenha, 2, ',', '.') }} cada)</label>
+                <label class="form-label" for="quantidade_senhas">Quantidade de Senhas</label>
                 <div style="position: relative;">
-                    <input type="number" id="quantidade_senhas" name="quantidade_senhas" class="form-control" value="{{ old('quantidade_senhas', 1) }}" min="1" max="50" required oninput="calcularTotal()" style="font-size: 1.25rem; font-weight: 600; padding-right: 3rem;">
+                    <input type="number" id="quantidade_senhas" name="quantidade_senhas" class="form-control" value="{{ old('quantidade_senhas', 1) }}" min="1" max="10" required oninput="recalcularPreco()" style="font-size: 1.25rem; font-weight: 600; padding-right: 3rem;">
                     <span style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none;">Qtd</span>
                 </div>
+                <span class="text-sm mt-1" style="color: #a8a29e; display: block;" id="limite-aviso"></span>
             </div>
-
-            <input type="hidden" name="valor_total" id="valor_total" value="{{ old('valor_total', $precoSenha) }}">
 
             <div style="flex: 1; width: 100%; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05)); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 1.5rem; text-align: right; box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.05);">
                 <p class="text-sm text-muted" style="text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Total a Pagar (PIX)</p>
-                <h2 style="font-size: 2.5rem; color: var(--primary); margin-top: 0.25rem; font-family: 'Outfit'; letter-spacing: -0.03em;" id="display_total">R$ {{ number_format($precoSenha, 2, ',', '.') }}</h2>
+                <h2 style="font-size: 2.5rem; color: var(--primary); margin-top: 0.25rem; font-family: 'Outfit'; letter-spacing: -0.03em;" id="display_total">R$ 0,00</h2>
             </div>
         </div>
 
@@ -106,8 +117,6 @@
 
 @push('scripts')
 <script>
-    const precoSenha = parseFloat("{{ $precoSenha }}");
-
     // Inicializando TomSelect
     new TomSelect("#bate_esteira_id",{
         create: false,
@@ -137,30 +146,49 @@
             inputNome.required = false;
             inputCpf.required = false;
             inputCidade.required = false;
+            inputCidade.required = false;
         }
     }
 
-    function calcularTotal() {
-        let qtd = parseInt(document.getElementById('quantidade_senhas').value) || 0;
-        if (qtd < 1) qtd = 1;
-        let total = qtd * precoSenha;
+    const selectCategoria = document.getElementById('categoria_id');
+    const inputQtd = document.getElementById('quantidade_senhas');
+    const displayTotal = document.getElementById('display_total');
+    const txtLimiteAviso = document.getElementById('limite-aviso');
+
+    function recalcularPreco() {
+        const option = selectCategoria.options[selectCategoria.selectedIndex];
+        if (!option || !option.value) {
+            txtLimiteAviso.innerText = '';
+            displayTotal.innerText = 'R$ 0,00';
+            return;
+        }
         
-        document.getElementById('valor_total').value = total.toFixed(2);
+        const preco = parseFloat(option.getAttribute('data-preco')) || 0;
+        const limite = parseInt(option.getAttribute('data-limite')) || 2;
+        
+        txtLimiteAviso.innerText = `Limite de compra para esta categoria: ${limite} senha(s)`;
+        inputQtd.max = limite;
+        
+        if (parseInt(inputQtd.value) > limite) {
+            inputQtd.value = limite;
+        }
+        
+        let qtd = parseInt(inputQtd.value) || 1;
+        let total = qtd * preco;
         
         let formatoBRL = total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        document.getElementById('display_total').innerText = 'R$ ' + formatoBRL;
+        displayTotal.innerText = 'R$ ' + formatoBRL;
     }
 
     document.addEventListener('DOMContentLoaded', () => {
         toggleNovoBateEsteira();
-        calcularTotal();
+        recalcularPreco();
     });
 
     document.getElementById('form-inscricao').addEventListener('submit', function() {
         document.getElementById('btn-submit').innerHTML = '<svg class="animate-spin" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite; margin-right: 0.5rem;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg> Processando...';
         document.getElementById('btn-submit').style.opacity = '0.8';
         document.getElementById('btn-submit').style.cursor = 'not-allowed';
-        // Avoid multi-click but allow submit to proceed
         setTimeout(() => document.getElementById('btn-submit').disabled = true, 50);
     });
 </script>

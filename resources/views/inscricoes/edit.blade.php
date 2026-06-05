@@ -51,6 +51,21 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
+                            <label for="categoria_id" class="form-label">Categoria *</label>
+                            <select name="categoria_id" id="categoria_id" class="form-select @error('categoria_id') is-invalid @enderror" required>
+                                <option value="">Selecione a categoria...</option>
+                                @foreach($categorias as $categoria)
+                                    <option value="{{ $categoria->id }}" data-preco="{{ $categoria->preco_senha }}" data-limite="{{ $categoria->limite_senhas_por_vaqueiro }}" {{ old('categoria_id', $inscricao->categoria_id) == $categoria->id ? 'selected' : '' }}>
+                                        {{ $categoria->nome }} (R$ {{ number_format($categoria->preco_senha, 2, ',', '.') }} - Limite: {{ $categoria->limite_senhas_por_vaqueiro }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('categoria_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6 mb-3">
                             <label for="forma_pagamento" class="form-label">Forma de Pagamento *</label>
                             <select name="forma_pagamento" id="forma_pagamento" class="form-select @error('forma_pagamento') is-invalid @enderror" required>
                                 <option value="" {{ old('forma_pagamento', $inscricao->forma_pagamento) == '' ? 'selected' : '' }}>Selecione...</option>
@@ -69,6 +84,19 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="quantidade_senhas" class="form-label">Quantidade de Senhas *</label>
+                            <input type="number" name="quantidade_senhas" id="quantidade_senhas"
+                                   class="form-control @error('quantidade_senhas') is-invalid @enderror"
+                                   value="{{ old('quantidade_senhas', $inscricao->quantidade_senhas ?? 1) }}" min="1" max="10" required>
+                            <span class="text-muted small" id="limite-aviso"></span>
+                            @error('quantidade_senhas')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
                         <div class="col-md-6 mb-3">
                             <label for="valor_total" class="form-label">Valor Total (R$) *</label>
@@ -81,15 +109,6 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="quantidade_senhas" class="form-label">Quantidade de Senhas *</label>
-                            <input type="number" name="quantidade_senhas" id="quantidade_senhas"
-                                   class="form-control @error('quantidade_senhas') is-invalid @enderror"
-                                   value="{{ old('quantidade_senhas', $inscricao->quantidade_senhas ?? 1) }}" min="1" max="50" required>
-                            @error('quantidade_senhas')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
                         <div class="col-md-6 mb-3">
                             <label for="status_pagamento" class="form-label">Status do Pagamento *</label>
                             <select name="status_pagamento" id="status_pagamento" class="form-select @error('status_pagamento') is-invalid @enderror" required>
@@ -152,27 +171,45 @@ function validarDupla() {
     }
 }
 
-// Lógica da Calculadora do Caixa
-const precoSenha = {{ $precoSenha }};
+// Lógica de Preços e Limites por Categoria
+const selectCategoria = document.getElementById('categoria_id');
 const inputQtd = document.getElementById('quantidade_senhas');
 const inputTotal = document.getElementById('valor_total');
 const inputRecebido = document.getElementById('valor_recebido');
 const displayTroco = document.getElementById('valor_troco');
+const txtLimiteAviso = document.getElementById('limite-aviso');
 
 let manualTotal = false;
 
-// Evitar que o script sobrescreva se o operador digitar o total manualmente
+function recalcularPreco() {
+    const option = selectCategoria.options[selectCategoria.selectedIndex];
+    if (!option || !option.value) {
+        txtLimiteAviso.innerText = '';
+        return;
+    }
+    
+    const preco = parseFloat(option.getAttribute('data-preco')) || 0;
+    const limite = parseInt(option.getAttribute('data-limite')) || 2;
+    
+    txtLimiteAviso.innerText = `Limite para esta categoria: ${limite} senha(s)`;
+    inputQtd.max = limite;
+    
+    if (parseInt(inputQtd.value) > limite) {
+        inputQtd.value = limite;
+    }
+
+    if (!manualTotal) {
+        let qtd = parseInt(inputQtd.value) || 1;
+        inputTotal.value = (qtd * preco).toFixed(2);
+    }
+    calcularTroco();
+}
+
+selectCategoria.addEventListener('change', recalcularPreco);
+inputQtd.addEventListener('input', recalcularPreco);
+
 inputTotal.addEventListener('input', function() {
     manualTotal = true;
-    calcularTroco();
-});
-
-// Auto-calcular total ao mudar a quantidade (se o operador não tiver digitado o total manualmente)
-inputQtd.addEventListener('input', function() {
-    if (!manualTotal) {
-        let qtd = parseInt(this.value) || 1;
-        inputTotal.value = (qtd * precoSenha).toFixed(2);
-    }
     calcularTroco();
 });
 
@@ -198,6 +235,9 @@ function calcularTroco() {
 }
 
 inputRecebido.addEventListener('input', calcularTroco);
+
+// Inicializar limite e preços ao carregar a página
+window.addEventListener('DOMContentLoaded', recalcularPreco);
 </script>
 @endsection
 

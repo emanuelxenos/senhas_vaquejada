@@ -3,6 +3,12 @@
 @section('content')
 <div class="card" style="max-width: 550px; margin: 2rem auto;">
     <div class="card-header text-center">
+        @php $logo = \App\Models\Setting::getValue('parque.logo') @endphp
+        @if(!empty($logo))
+            <div class="mb-4 text-center">
+                <img src="{{ asset($logo) }}" alt="Logo" style="max-height: 80px; width: auto; border-radius: 8px;" class="d-block mx-auto">
+            </div>
+        @endif
         <h1 class="card-title glow-text">Crie sua Conta</h1>
         <p class="text-muted text-sm mt-2">Faça seu cadastro para comprar senhas online com facilidade</p>
     </div>

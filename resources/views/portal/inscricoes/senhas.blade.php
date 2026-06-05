@@ -4,7 +4,7 @@
 <div class="flex justify-between items-center mb-6">
     <div>
         <h1 class="card-title glow-text" style="margin-bottom: 0;">Escolha de Senhas</h1>
-        <p class="text-muted text-sm mt-1">Inscrição #{{ str_pad($inscricao->id, 4, '0', STR_PAD_LEFT) }} • Bate-Esteira: {{ $inscricao->bateEsteira ? $inscricao->bateEsteira->nome : 'N/A' }}</p>
+        <p class="text-muted text-sm mt-1">Inscrição #{{ str_pad($inscricao->id, 4, '0', STR_PAD_LEFT) }} • Categoria: {{ $inscricao->categoria ? $inscricao->categoria->nome : 'N/A' }} • Bate-Esteira: {{ $inscricao->bateEsteira ? $inscricao->bateEsteira->nome : 'N/A' }}</p>
     </div>
     <a href="{{ route('portal.dashboard') }}" class="btn btn-secondary text-sm" style="width: auto; padding: 0.6rem 1.25rem;">Voltar ao Painel</a>
 </div>
@@ -149,12 +149,17 @@
                                 </div>
                                 
                                 <div class="form-group" style="margin-bottom: 0;">
-                                    <label class="form-label">Categoria / Tipo</label>
+                                    <label class="form-label">Tipo de Senha</label>
                                     <select name="tipos[]" class="form-control" style="background: rgba(15, 23, 42, 0.6); color: #fff; border: 1px solid var(--glass-border); border-radius: 8px; padding: 0.6rem; width: 100%; cursor: pointer;" required>
                                         <option value="amador" selected>Amador</option>
                                         <option value="profissional">Profissional</option>
-                                        <option value="boi_tv">Boi TV</option>
+                                        @if($permitirBoiTv)
+                                            <option value="boi_tv">Boi TV</option>
+                                        @endif
                                     </select>
+                                    @if(!$permitirBoiTv)
+                                        <small class="text-muted mt-1 d-block" style="font-size: 0.75rem;">* Boi TV indisponível (data limite expirou).</small>
+                                    @endif
                                 </div>
                             </div>
                         @endfor
@@ -199,7 +204,7 @@
     function openModalSenhas() {
         const modal = document.getElementById('modalSenhas');
         modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // impede scroll atrás
+        document.body.style.overflow = 'hidden';
     }
 
     function closeModalSenhas() {
