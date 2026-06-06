@@ -105,7 +105,7 @@
                                     <form action="{{ route('inscricoes.destroy', $inscricao) }}" method="POST" style="display:inline-block;">
                                         @csrf
                                         @method('DELETE')
-                                        <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Tem certeza que deseja excluir esta inscrição?')" title="Excluir">
+                                        <button class="btn btn-sm btn-outline-danger" data-confirm="Tem certeza que deseja excluir esta inscrição?" title="Excluir">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>

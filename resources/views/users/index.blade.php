@@ -54,7 +54,7 @@
                                     <form action="{{ route('users.destroy', $user) }}" method="POST" style="display:inline-block;">
                                         @csrf
                                         @method('DELETE')
-                                        <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Tem certeza que deseja excluir o acesso deste usuário?')">
+                                        <button class="btn btn-sm btn-outline-danger" data-confirm="Tem certeza que deseja excluir o acesso deste usuário?">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>

@@ -27,10 +27,10 @@
                 <td>{{ $vaqueiro->representacao }}</td>
                 <td>
                     <a href="{{ route('vaqueiros.edit', $vaqueiro) }}" class="btn btn-sm btn-warning">Editar</a>
-                    <form action="{{ route('vaqueiros.destroy', $vaqueiro) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Excluir?')">
+                    <form action="{{ route('vaqueiros.destroy', $vaqueiro) }}" method="POST" style="display:inline-block;">
                         @csrf
                         @method('DELETE')
-                        <button class="btn btn-sm btn-danger">Excluir</button>
+                        <button class="btn btn-sm btn-danger" data-confirm="Deseja realmente excluir este vaqueiro?">Excluir</button>
                     </form>
                     <a href="{{ route('vaqueiros.pdf', $vaqueiro) }}" target="_blank" class="btn btn-sm btn-secondary">PDF</a>
                 </td>

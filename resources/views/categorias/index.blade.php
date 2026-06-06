@@ -48,10 +48,10 @@
                                             data-bs-target="#editModal{{ $categoria->id }}">
                                         Editar
                                     </button>
-                                    <form action="{{ route('categorias.destroy', $categoria->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Deseja realmente excluir esta categoria?')">
+                                    <form action="{{ route('categorias.destroy', $categoria->id) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" data-confirm="Deseja realmente excluir esta categoria?">
                                             Excluir
                                         </button>
                                     </form>

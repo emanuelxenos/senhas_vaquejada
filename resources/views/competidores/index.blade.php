@@ -66,7 +66,7 @@
                                     <form action="{{ route('competidores.destroy', $competidor) }}" method="POST" style="display:inline-block;">
                                         @csrf
                                         @method('DELETE')
-                                        <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Tem certeza que deseja excluir este competidor?')">
+                                        <button class="btn btn-sm btn-outline-danger" data-confirm="Tem certeza que deseja excluir este competidor?">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
