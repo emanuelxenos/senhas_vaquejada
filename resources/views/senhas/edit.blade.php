@@ -34,13 +34,12 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="tipo" class="form-label">Categoria / Tipo *</label>
-                        <select name="tipo" id="tipo" class="form-select @error('tipo') is-invalid @enderror" required>
-                            <option value="amador" {{ old('tipo', $senha->tipo) == 'amador' ? 'selected' : '' }}>Amador</option>
-                            <option value="profissional" {{ old('tipo', $senha->tipo) == 'profissional' ? 'selected' : '' }}>Profissional</option>
-                            <option value="boi_tv" {{ old('tipo', $senha->tipo) == 'boi_tv' ? 'selected' : '' }}>Boi TV</option>
+                        <label for="is_boi_tv" class="form-label">É Boi TV? *</label>
+                        <select name="is_boi_tv" id="is_boi_tv" class="form-select @error('is_boi_tv') is-invalid @enderror" required>
+                            <option value="0" {{ old('is_boi_tv', $senha->is_boi_tv) == 0 ? 'selected' : '' }}>Não (Senha Comum)</option>
+                            <option value="1" {{ old('is_boi_tv', $senha->is_boi_tv) == 1 ? 'selected' : '' }}>Sim (Boi TV)</option>
                         </select>
-                        @error('tipo')
+                        @error('is_boi_tv')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>

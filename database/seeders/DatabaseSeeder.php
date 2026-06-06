@@ -33,10 +33,12 @@ class DatabaseSeeder extends Seeder
 
         // Criar Categorias padrão
         $categorias = [
-            ['nome' => 'Aberto', 'preco_senha' => 200.00, 'limite_senhas_por_vaqueiro' => 2, 'minimo_bois_sucesso' => 2],
-            ['nome' => 'Aspirante', 'preco_senha' => 150.00, 'limite_senhas_por_vaqueiro' => 2, 'minimo_bois_sucesso' => 2],
-            ['nome' => 'Jovem', 'preco_senha' => 80.00, 'limite_senhas_por_vaqueiro' => 1, 'minimo_bois_sucesso' => 2],
-            ['nome' => 'Feminina', 'preco_senha' => 100.00, 'limite_senhas_por_vaqueiro' => 1, 'minimo_bois_sucesso' => 2],
+            ['nome' => 'Aberto', 'preco_senha' => 200.00, 'limite_senhas_por_vaqueiro' => 2, 'quantidade_bois' => 3, 'minimo_bois_sucesso' => 2],
+            ['nome' => 'Aspirante', 'preco_senha' => 150.00, 'limite_senhas_por_vaqueiro' => 2, 'quantidade_bois' => 3, 'minimo_bois_sucesso' => 2],
+            ['nome' => 'Jovem', 'preco_senha' => 80.00, 'limite_senhas_por_vaqueiro' => 1, 'quantidade_bois' => 3, 'minimo_bois_sucesso' => 2],
+            ['nome' => 'Feminina', 'preco_senha' => 100.00, 'limite_senhas_por_vaqueiro' => 1, 'quantidade_bois' => 3, 'minimo_bois_sucesso' => 2],
+            ['nome' => 'Amador', 'preco_senha' => 120.00, 'limite_senhas_por_vaqueiro' => 2, 'quantidade_bois' => 3, 'minimo_bois_sucesso' => 2],
+            ['nome' => 'Profissional', 'preco_senha' => 250.00, 'limite_senhas_por_vaqueiro' => 2, 'quantidade_bois' => 3, 'minimo_bois_sucesso' => 2],
         ];
 
         foreach ($categorias as $cat) {
@@ -44,8 +46,7 @@ class DatabaseSeeder extends Seeder
         }
 
         // Criar configurações padrão de bois por tipo de senha
-        Setting::setValue('senha.bois_amador', '3');
-        Setting::setValue('senha.bois_profissional', '2');
+        Setting::setValue('senha.bois_padrao', '3');
         Setting::setValue('senha.bois_boi_tv', '2');
         
         // Data limite nula por padrão (sem restrição até que seja configurado)

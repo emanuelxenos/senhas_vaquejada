@@ -56,10 +56,10 @@
                             <span style="display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 0.5rem; font-weight: 700;">Número</span>
                             <span style="font-size: 2.5rem; font-family: 'Outfit'; font-weight: 800; color: #fff;">{{ $senha->numero_senha }}</span>
                             <span style="display: block; font-size: 0.75rem; color: #fed7aa; font-weight: 600; margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.5px;">
-                                @if($senha->tipo === 'boi_tv')
+                                @if($senha->is_boi_tv)
                                     Boi TV
                                 @else
-                                    {{ ucfirst($senha->tipo ?? 'amador') }}
+                                    Senha Comum
                                 @endif
                             </span>
                             @if($senha->status === 'pendente')
@@ -149,12 +149,11 @@
                                 </div>
                                 
                                 <div class="form-group" style="margin-bottom: 0;">
-                                    <label class="form-label">Tipo de Senha</label>
-                                    <select name="tipos[]" class="form-control" style="background: rgba(15, 23, 42, 0.6); color: #fff; border: 1px solid var(--glass-border); border-radius: 8px; padding: 0.6rem; width: 100%; cursor: pointer;" required>
-                                        <option value="amador" selected>Amador</option>
-                                        <option value="profissional">Profissional</option>
+                                    <label class="form-label">É Boi TV?</label>
+                                    <select name="is_boi_tv[]" class="form-control" style="background: rgba(15, 23, 42, 0.6); color: #fff; border: 1px solid var(--glass-border); border-radius: 8px; padding: 0.6rem; width: 100%; cursor: pointer;" required>
+                                        <option value="0" selected>Não (Senha Comum)</option>
                                         @if($permitirBoiTv)
-                                            <option value="boi_tv">Boi TV</option>
+                                            <option value="1">Sim (Boi TV)</option>
                                         @endif
                                     </select>
                                     @if(!$permitirBoiTv)
@@ -190,7 +189,7 @@
         
         texto += "*Senhas Escolhidas:*\n";
         @foreach($inscricao->senhas as $senha)
-            texto += "🔹 *Senha {{ $senha->numero_senha }}* ({{ $senha->tipo === 'boi_tv' ? 'Boi TV' : ucfirst($senha->tipo ?? 'Amador') }})\n";
+            texto += "🔹 *Senha {{ $senha->numero_senha }}* ({{ $senha->is_boi_tv ? 'Boi TV' : 'Senha Comum' }})\n";
         @endforeach
         
         texto += "\n📥 Baixe seu comprovante oficial em PDF:\n" + url;

@@ -22,6 +22,7 @@ class CategoriaController extends Controller
             'nome' => 'required|string|max:100|unique:categorias,nome',
             'preco_senha' => 'required|numeric|min:0',
             'limite_senhas_por_vaqueiro' => 'required|integer|min:1|max:10',
+            'quantidade_bois' => 'required|integer|min:1|max:10',
             'minimo_bois_sucesso' => 'required|integer|min:1|max:10',
         ]);
 
@@ -37,6 +38,7 @@ class CategoriaController extends Controller
             'nome' => 'required|string|max:100|unique:categorias,nome,' . $categoria->id,
             'preco_senha' => 'required|numeric|min:0',
             'limite_senhas_por_vaqueiro' => 'required|integer|min:1|max:10',
+            'quantidade_bois' => 'required|integer|min:1|max:10',
             'minimo_bois_sucesso' => 'required|integer|min:1|max:10',
         ]);
 

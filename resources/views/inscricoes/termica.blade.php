@@ -80,7 +80,7 @@
         <p class="text-center text-bold">SENHAS VINCULADAS</p>
         <div class="senhas" style="font-size: 15px; padding: 8px 5px; line-height: 1.4;">
             @foreach($inscricao->senhas as $senha)
-                {{ $senha->numero_senha }} ({{ $senha->tipo === 'boi_tv' ? 'Boi TV' : ucfirst($senha->tipo ?? 'amador') }})@if(!$loop->last),<br>@endif
+                {{ $senha->numero_senha }} ({{ $senha->is_boi_tv ? 'Boi TV' : 'Comum' }})@if(!$loop->last),<br>@endif
             @endforeach
         </div>
     @else

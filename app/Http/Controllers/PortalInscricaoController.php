@@ -236,10 +236,8 @@ class PortalInscricaoController extends Controller
             ->values()
             ->all();
 
-        $tipos = collect($request->input('tipos', []))
-            ->map(fn ($v) => is_string($v) ? trim($v) : $v)
-            ->filter(fn ($v) => $v !== null && $v !== '')
-            ->values()
+        $isBoiTvArray = collect($request->input('is_boi_tv', []))
+            ->map(fn ($v) => (int)$v)
             ->all();
 
         if (count($senhas) !== $restantes) {
@@ -253,14 +251,14 @@ class PortalInscricaoController extends Controller
             $permitirBoiTv = false;
         }
 
-        if (!$permitirBoiTv && in_array('boi_tv', $tipos)) {
-            return back()->withErrors(['tipos' => 'A data limite para a compra online da senha tipo Boi TV já expirou.'])->withInput();
+        if (!$permitirBoiTv && in_array(1, $isBoiTvArray)) {
+            return back()->withErrors(['is_boi_tv' => 'A data limite para a compra online da senha tipo Boi TV já expirou.'])->withInput();
         }
 
         validator(
             [
                 'senhas' => $senhas,
-                'tipos' => $tipos
+                'is_boi_tv' => $isBoiTvArray
             ],
             [
                 'senhas' => 'required|array|min:1', 
@@ -271,23 +269,23 @@ class PortalInscricaoController extends Controller
                     'distinct',
                     \Illuminate\Validation\Rule::unique('senhas', 'numero_senha')->whereNot('status', 'cancelado')
                 ],
-                'tipos' => 'required|array|min:1',
-                'tipos.*' => 'required|string|in:amador,profissional,boi_tv'
+                'is_boi_tv' => 'required|array|min:1',
+                'is_boi_tv.*' => 'required|in:0,1'
             ],
             [
                 'senhas.*.unique' => 'Um dos números de senha escolhidos já foi pego por outro competidor. Escolha outro.',
-                'tipos.*.in' => 'Categoria inválida selecionada.'
+                'is_boi_tv.*.in' => 'Opção inválida selecionada.'
             ]
         )->validate();
 
         // O evento "created" em Senha criará automaticamente as corridas no BD!
         foreach ($senhas as $index => $numero) {
-            $tipo = $tipos[$index] ?? 'amador';
+            $isBoiTv = (bool) ($isBoiTvArray[$index] ?? false);
             Senha::create([
                 'inscricao_id' => $inscricao->id,
                 'numero_senha' => $numero,
                 'status' => 'pendente',
-                'tipo' => $tipo
+                'is_boi_tv' => $isBoiTv
             ]);
         }
 

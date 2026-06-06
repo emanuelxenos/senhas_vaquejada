@@ -24,22 +24,13 @@ class DashboardController extends Controller
             ->pluck('total', 'forma_pagamento')
             ->toArray();
 
-        // Dados para gráfico: senhas por categoria/tipo
-        $rawCategorias = Senha::selectRaw('tipo, COUNT(*) as total')
-            ->groupBy('tipo')
-            ->pluck('total', 'tipo')
+        // Dados para gráfico: senhas por categoria
+        $senhasPorCategoria = Senha::join('inscricoes', 'senhas.inscricao_id', '=', 'inscricoes.id')
+            ->join('categorias', 'inscricoes.categoria_id', '=', 'categorias.id')
+            ->selectRaw('categorias.nome as cat_nome, COUNT(*) as total')
+            ->groupBy('categorias.nome')
+            ->pluck('total', 'cat_nome')
             ->toArray();
-
-        $senhasPorCategoria = [];
-        foreach ($rawCategorias as $tipo => $total) {
-            $label = match($tipo) {
-                'amador' => 'Amador',
-                'profissional' => 'Profissional',
-                'boi_tv' => 'Boi TV',
-                default => ucfirst($tipo ?: 'Outros')
-            };
-            $senhasPorCategoria[$label] = $total;
-        }
 
         // URL para celular (detecta IP local se estiver rodando em localhost)
         $localIp = '127.0.0.1';

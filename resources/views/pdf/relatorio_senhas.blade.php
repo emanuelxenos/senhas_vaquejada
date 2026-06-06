@@ -113,7 +113,7 @@
                     </td>
                     <td>
                         <strong>Cat:</strong> {{ $senha->inscricao->categoria ? $senha->inscricao->categoria->nome : 'N/A' }}<br>
-                        <strong>Tipo:</strong> {{ ucfirst(str_replace('_', ' ', $senha->tipo)) }}
+                        <strong>Tipo:</strong> {{ $senha->is_boi_tv ? 'Boi TV' : 'Comum' }}
                     </td>
                     <td class="status">{{ str_replace('_', ' ', $senha->status) }}</td>
                     <td></td>

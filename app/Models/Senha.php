@@ -11,19 +11,22 @@ class Senha extends Model
         'inscricao_id',
         'numero_senha',
         'status',
-        'tipo',
+        'is_boi_tv',
         'motivo_cancelamento',
         'cancelado_por',
     ];
 
     protected $casts = [
         'status' => 'string',
+        'is_boi_tv' => 'boolean',
     ];
 
     protected static function booted()
     {
         static::created(function ($senha) {
-            $totalBoisConfigurado = (int) Setting::getValue('senha.bois_' . $senha->tipo, 3);
+            $totalBoisConfigurado = $senha->inscricao && $senha->inscricao->categoria
+                ? (int) $senha->inscricao->categoria->quantidade_bois
+                : 3;
             for ($i = 1; $i <= $totalBoisConfigurado; $i++) {
                 $senha->corridas()->create([
                     'numero_corrida' => $i,
@@ -77,7 +80,7 @@ class Senha extends Model
         $corridas = $this->corridas()->get();
         $categoria = $this->inscricao ? $this->inscricao->categoria : null;
         
-        $totalBoisConfigurado = (int) Setting::getValue('senha.bois_' . $this->tipo, 3);
+        $totalBoisConfigurado = $categoria ? (int) $categoria->quantidade_bois : 3;
         $minimoBoisSucesso = $categoria ? (int) $categoria->minimo_bois_sucesso : 2;
 
         $boiBatidoCount = $corridas->where('resultado', 'boi_batido')->count();

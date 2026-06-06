@@ -144,11 +144,10 @@
                             <input class="form-control" name="senhas[]" placeholder="Ex: 001, 002, etc." required />
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small">Categoria / Tipo</label>
-                            <select name="tipos[]" class="form-select" required>
-                                <option value="amador" selected>Amador</option>
-                                <option value="profissional">Profissional</option>
-                                <option value="boi_tv">Boi TV</option>
+                            <label class="form-label small">É Boi TV?</label>
+                            <select name="is_boi_tv[]" class="form-select" required>
+                                <option value="0" selected>Não (Senha Comum)</option>
+                                <option value="1">Sim (Boi TV)</option>
                             </select>
                         </div>
                     </div>

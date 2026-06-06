@@ -23,9 +23,6 @@ class SettingController extends Controller
             'payment.asaas_env' => Setting::getValue('payment.asaas_env', 'sandbox'),
             'payment.pagseguro_token' => Setting::getValue('payment.pagseguro_token', ''),
             'payment.pagseguro_env' => Setting::getValue('payment.pagseguro_env', 'sandbox'),
-            'senha.bois_amador' => Setting::getValue('senha.bois_amador', '3'),
-            'senha.bois_profissional' => Setting::getValue('senha.bois_profissional', '2'),
-            'senha.bois_boi_tv' => Setting::getValue('senha.bois_boi_tv', '2'),
             'senha.data_limite_boi_tv' => Setting::getValue('senha.data_limite_boi_tv', ''),
         ];
 
@@ -47,9 +44,6 @@ class SettingController extends Controller
             'payment.asaas_env' => 'nullable|string|in:sandbox,production',
             'payment.pagseguro_token' => 'nullable|string',
             'payment.pagseguro_env' => 'nullable|string|in:sandbox,production',
-            'senha.bois_amador' => 'required|integer|min:1|max:10',
-            'senha.bois_profissional' => 'required|integer|min:1|max:10',
-            'senha.bois_boi_tv' => 'required|integer|min:1|max:10',
             'senha.data_limite_boi_tv' => 'nullable|date',
         ]);
 

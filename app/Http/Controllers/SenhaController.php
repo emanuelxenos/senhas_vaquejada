@@ -78,11 +78,6 @@ class SenhaController extends Controller
             ->values()
             ->all();
 
-        $tipos = collect($request->input('tipos', []))
-            ->map(fn ($v) => is_string($v) ? trim($v) : $v)
-            ->filter(fn ($v) => $v !== null && $v !== '')
-            ->values()
-            ->all();
 
         if ($restantes === 0) {
             return redirect()->route('senhas.index')->with('sucesso', 'Esta inscrição já está completa.');
@@ -94,10 +89,12 @@ class SenhaController extends Controller
                 ->withInput();
         }
 
+        $isBoiTvArray = $request->input('is_boi_tv', []);
+
         validator(
             [
                 'senhas' => $senhas,
-                'tipos' => $tipos
+                'is_boi_tv' => $isBoiTvArray
             ],
             [
                 'senhas' => 'required|array|min:1', 
@@ -108,19 +105,19 @@ class SenhaController extends Controller
                     'distinct',
                     \Illuminate\Validation\Rule::unique('senhas', 'numero_senha')->whereNot('status', 'cancelado')
                 ],
-                'tipos' => 'required|array|min:1',
-                'tipos.*' => 'required|string|in:amador,profissional,boi_tv'
+                'is_boi_tv' => 'required|array|min:1',
+                'is_boi_tv.*' => 'required|in:0,1'
             ]
         )->validate();
 
         // O model event "created" cuidará de criar as corridas individuais automaticamente!
         foreach ($senhas as $index => $numero) {
-            $tipo = $tipos[$index] ?? 'amador';
+            $isBoiTv = (bool) ($isBoiTvArray[$index] ?? false);
             Senha::create([
                 'inscricao_id' => $inscricao->id,
                 'numero_senha' => $numero,
                 'status' => 'pendente',
-                'tipo' => $tipo
+                'is_boi_tv' => $isBoiTv
             ]);
         }
 
@@ -145,9 +142,13 @@ class SenhaController extends Controller
                     ->whereNot('status', 'cancelado')
             ],
             'status' => 'required|in:pendente,correu,boi_batido,cancelado',
-            'tipo' => 'sometimes|required|string|in:amador,profissional,boi_tv',
+            'is_boi_tv' => 'sometimes|required|in:0,1',
             'motivo_cancelamento' => 'required_if:status,cancelado|nullable|string',
         ]);
+
+        if (isset($data['is_boi_tv'])) {
+            $data['is_boi_tv'] = (bool) $data['is_boi_tv'];
+        }
 
         if ($data['status'] === 'cancelado') {
             if (auth()->check() && auth()->user()->isLocutor()) {

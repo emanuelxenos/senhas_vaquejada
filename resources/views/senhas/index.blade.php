@@ -49,7 +49,7 @@
              data-numero="{{ $senha->numero_senha }}"
              data-status="{{ $senha->status }}"
              data-dupla="{{ $senha->inscricao->vaqueiro->nome }} & {{ $senha->inscricao->bateEsteira->nome }}"
-             data-tipo="{{ $senha->tipo ?? 'amador' }}"
+             data-tipo="{{ $senha->is_boi_tv ? 'boi_tv' : 'comum' }}"
              data-categoria="{{ $senha->inscricao->categoria->nome ?? 'N/A' }}"
              data-motivo="{{ $senha->motivo_cancelamento }}"
              data-cancelado_por="{{ $senha->cancelado_por }}"
@@ -57,11 +57,11 @@
              data-bs-toggle="tooltip"
              data-bs-html="true"
              data-bs-placement="top"
-             title="Vaqueiro: {{ $senha->inscricao->vaqueiro->nome }}<br>Bate-Esteira: {{ $senha->inscricao->bateEsteira->nome }}<br>Categoria: {{ $senha->inscricao->categoria->nome ?? 'N/A' }}<br>Tipo: {{ $senha->tipo === 'boi_tv' ? 'Boi TV' : ucfirst($senha->tipo ?? 'amador') }}">
+             title="Vaqueiro: {{ $senha->inscricao->vaqueiro->nome }}<br>Bate-Esteira: {{ $senha->inscricao->bateEsteira->nome }}<br>Categoria: {{ $senha->inscricao->categoria->nome ?? 'N/A' }}<br>Tipo: {{ $senha->is_boi_tv ? 'Boi TV' : 'Comum' }}">
             
             <div class="senha-number">{{ $senha->numero_senha }}</div>
             <div style="font-size: 10px; color: rgba(255,255,255,0.85); font-weight: bold; margin-bottom: 4px; text-transform: uppercase;">
-                {{ $senha->tipo === 'boi_tv' ? 'Boi TV' : ucfirst($senha->tipo ?? 'amador') }}
+                {{ $senha->is_boi_tv ? 'Boi TV' : 'Comum' }}
             </div>
             
             <!-- Indicadores das corridas -->

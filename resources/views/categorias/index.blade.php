@@ -29,6 +29,7 @@
                             <th class="ps-4">Nome da Categoria</th>
                             <th>Preço por Senha</th>
                             <th>Limite por Vaqueiro</th>
+                            <th>Quantidade de Bois</th>
                             <th>Mínimo para Sucesso (Senha Batida)</th>
                             <th class="text-end pe-4">Ações</th>
                         </tr>
@@ -39,6 +40,7 @@
                                 <td class="ps-4 fw-bold text-dark">{{ $categoria->nome }}</td>
                                 <td>R$ {{ number_format($categoria->preco_senha, 2, ',', '.') }}</td>
                                 <td>{{ $categoria->limite_senhas_por_vaqueiro }} senha(s)</td>
+                                <td>{{ $categoria->quantidade_bois }} boi(s)</td>
                                 <td>{{ $categoria->minimo_bois_sucesso }} boi(s) batido(s)</td>
                                 <td class="text-end pe-4">
                                     <button class="btn btn-sm btn-outline-secondary me-2" 
@@ -79,6 +81,10 @@
                                                 <div class="mb-3">
                                                     <label class="form-label" for="limite-edit-{{ $categoria->id }}">Limite de Senhas por Vaqueiro</label>
                                                     <input id="limite-edit-{{ $categoria->id }}" name="limite_senhas_por_vaqueiro" type="number" min="1" max="10" class="form-control" value="{{ old('limite_senhas_por_vaqueiro', $categoria->limite_senhas_por_vaqueiro) }}" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="qtd-bois-edit-{{ $categoria->id }}">Quantidade de Bois por Senha</label>
+                                                    <input id="qtd-bois-edit-{{ $categoria->id }}" name="quantidade_bois" type="number" min="1" max="10" class="form-control" value="{{ old('quantidade_bois', $categoria->quantidade_bois) }}" required>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label" for="minimo-edit-{{ $categoria->id }}">Bois Mínimos para Sucesso (Senha Batida)</label>
@@ -126,6 +132,10 @@
                         <div class="mb-3">
                             <label class="form-label" for="limite-create">Limite de Senhas por Vaqueiro</label>
                             <input id="limite-create" name="limite_senhas_por_vaqueiro" type="number" min="1" max="10" class="form-control" value="2" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="qtd-bois-create">Quantidade de Bois por Senha</label>
+                            <input id="qtd-bois-create" name="quantidade_bois" type="number" min="1" max="10" class="form-control" value="3" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label" for="minimo-create">Bois Mínimos para Sucesso (Senha Batida)</label>

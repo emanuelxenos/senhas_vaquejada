@@ -101,13 +101,14 @@
 
             <div class="comissao">
                 <div class="comissao-item">
-                    <span class="label">Comissão:</span>
-                    <span>Profissional:</span>
-                    <span class="quadrado" style="{{ (isset($senha->tipo) && $senha->tipo === 'profissional') ? 'background-color: #000;' : '' }}"></span>
-                    <span>Amador:</span>
-                    <span class="quadrado" style="{{ (!isset($senha->tipo) || $senha->tipo === 'amador') ? 'background-color: #000;' : '' }}"></span>
-                    <span>Boi Tv:</span>
-                    <span class="quadrado" style="{{ (isset($senha->tipo) && $senha->tipo === 'boi_tv') ? 'background-color: #000;' : '' }}"></span>
+                    <span class="label">Categoria:</span>
+                    <span>{{ $inscricao->categoria ? $inscricao->categoria->nome : 'N/A' }}</span>
+                    <span style="margin-left: 20px;"></span>
+                    <span class="label">Boi TV:</span>
+                    <span class="quadrado" style="{{ $senha->is_boi_tv ? 'background-color: #000;' : '' }}"></span>
+                    <span>Sim</span>
+                    <span class="quadrado" style="{{ !$senha->is_boi_tv ? 'background-color: #000;' : '' }}"></span>
+                    <span>Não</span>
                 </div>
             </div>
 

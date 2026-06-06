@@ -14,12 +14,14 @@ class Categoria extends Model
         'nome',
         'preco_senha',
         'limite_senhas_por_vaqueiro',
+        'quantidade_bois',
         'minimo_bois_sucesso',
     ];
 
     protected $casts = [
         'preco_senha' => 'decimal:2',
         'limite_senhas_por_vaqueiro' => 'integer',
+        'quantidade_bois' => 'integer',
         'minimo_bois_sucesso' => 'integer',
     ];
 

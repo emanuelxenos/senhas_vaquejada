@@ -58,30 +58,10 @@
         <hr class="my-4">
         <h4>Regras de Bois e Limites de Senhas</h4>
         
-        <div class="row">
-            <div class="col-md-4 mb-3">
-                <label class="form-label" for="senha-bois-amador">Quantidade de Bois - Amador</label>
-                <input id="senha-bois-amador" name="senha[bois_amador]" type="number" class="form-control @error('senha.bois_amador') is-invalid @enderror" value="{{ old('senha.bois_amador', $config['senha.bois_amador']) }}" required>
-                @error('senha.bois_amador')<div class="invalid-feedback">{{ $message }}</div>@enderror
-            </div>
-            
-            <div class="col-md-4 mb-3">
-                <label class="form-label" for="senha-bois-profissional">Quantidade de Bois - Profissional</label>
-                <input id="senha-bois-profissional" name="senha[bois_profissional]" type="number" class="form-control @error('senha.bois_profissional') is-invalid @enderror" value="{{ old('senha.bois_profissional', $config['senha.bois_profissional']) }}" required>
-                @error('senha.bois_profissional')<div class="invalid-feedback">{{ $message }}</div>@enderror
-            </div>
-
-            <div class="col-md-4 mb-3">
-                <label class="form-label" for="senha-bois-boi-tv">Quantidade de Bois - Boi TV</label>
-                <input id="senha-bois-boi-tv" name="senha[bois_boi_tv]" type="number" class="form-control @error('senha.bois_boi_tv') is-invalid @enderror" value="{{ old('senha.bois_boi_tv', $config['senha.bois_boi_tv']) }}" required>
-                @error('senha.bois_boi_tv')<div class="invalid-feedback">{{ $message }}</div>@enderror
-            </div>
-        </div>
-
         <div class="mb-3">
             <label class="form-label" for="senha-data-limite-boi-tv">Data Limite de Compra Online (Boi TV)</label>
             <input id="senha-data-limite-boi-tv" name="senha[data_limite_boi_tv]" type="date" class="form-control @error('senha.data_limite_boi_tv') is-invalid @enderror" value="{{ old('senha.data_limite_boi_tv', $config['senha.data_limite_boi_tv']) }}">
-            <small class="text-muted">A partir desta data, o tipo "Boi TV" só poderá ser comprado pela Secretaria/Caixa (ficará oculto no Portal).</small>
+            <small class="text-muted">A partir desta data, a opção "Boi TV" só poderá ser comprada pela Secretaria/Caixa (ficará oculta no Portal).</small>
             @error('senha.data_limite_boi_tv')<div class="invalid-feedback">{{ $message }}</div>@enderror
         </div>
 
