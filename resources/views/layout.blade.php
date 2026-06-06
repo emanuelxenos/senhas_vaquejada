@@ -592,6 +592,64 @@
     });
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Interceptar cliques em botões de exclusão que usavam o confirm nativo e embelezá-los com SweetAlert2
+    document.addEventListener('click', function(e) {
+        let target = e.target.closest('button, a');
+        if (!target) return;
+        
+        let form = target.closest('form');
+        let isDeleteForm = form && form.querySelector('input[name="_method"][value="DELETE"]');
+        
+        if (isDeleteForm && (target.type === 'submit' || target.tagName === 'BUTTON')) {
+            if (form.dataset.confirmed) {
+                return;
+            }
+            
+            e.preventDefault();
+            e.stopPropagation();
+            
+            let confirmMsg = 'Tem certeza que deseja apagar este registro?';
+            
+            // Tentar extrair a mensagem personalizada do onclick ou onsubmit original
+            let onclickAttr = target.getAttribute('onclick');
+            if (onclickAttr && onclickAttr.includes('confirm(')) {
+                let match = onclickAttr.match(/confirm\(['"](.+?)['"]\)/);
+                if (match && match[1]) {
+                    confirmMsg = match[1];
+                }
+            }
+            
+            let onsubmitAttr = form.getAttribute('onsubmit');
+            if (onsubmitAttr && onsubmitAttr.includes('confirm(')) {
+                let match = onsubmitAttr.match(/confirm\(['"](.+?)['"]\)/);
+                if (match && match[1]) {
+                    confirmMsg = match[1];
+                }
+            }
+
+            Swal.fire({
+                title: 'Tem certeza?',
+                text: confirmMsg,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sim, excluir!',
+                cancelButtonText: 'Cancelar',
+                background: '#ffffff',
+                color: '#212529'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.dataset.confirmed = 'true';
+                    form.submit();
+                }
+            });
+        }
+    });
+</script>
+
 @yield('scripts')
 </body>
 </html>
