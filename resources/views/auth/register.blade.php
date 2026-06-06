@@ -90,6 +90,7 @@
             <select class="form-select @error('role') is-invalid @enderror" id="role" name="role" required>
                 <option value="" disabled selected>Selecione um perfil...</option>
                 <option value="locutor" {{ old('role') == 'locutor' ? 'selected' : '' }}>Locutor (Somente visualização)</option>
+                <option value="juiz" {{ old('role') == 'juiz' ? 'selected' : '' }}>Juiz (Lança resultados)</option>
                 <option value="secretario" {{ old('role') == 'secretario' ? 'selected' : '' }}>Secretário (Acesso a cadastros)</option>
                 <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Administrador (Acesso total)</option>
             </select>

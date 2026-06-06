@@ -36,7 +36,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Gate::define('update-status', function (User $user) {
-            return $user->isAdmin() || $user->isSecretario() || $user->isLocutor();
+            return $user->isAdmin() || $user->isSecretario() || $user->isJuiz();
         });
 
         if (Schema::hasTable('settings')) {

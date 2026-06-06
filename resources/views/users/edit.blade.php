@@ -48,6 +48,7 @@
                         <select class="form-select @error('role') is-invalid @enderror" id="role" name="role" required
                             @if($user->id === auth()->id()) disabled @endif>
                             <option value="locutor" {{ old('role', $user->role) == 'locutor' ? 'selected' : '' }}>Locutor (Somente visualiza)</option>
+                            <option value="juiz" {{ old('role', $user->role) == 'juiz' ? 'selected' : '' }}>Juiz (Lança resultados)</option>
                             <option value="secretario" {{ old('role', $user->role) == 'secretario' ? 'selected' : '' }}>Secretário (Acesso aos cadastros diarios)</option>
                             <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Administrador (Acesso total)</option>
                         </select>

@@ -41,6 +41,11 @@ class User extends Authenticatable
         return $this->role === 'locutor';
     }
 
+    public function isJuiz()
+    {
+        return $this->role === 'juiz';
+    }
+
     public function isVaqueiro()
     {
         return $this->role === 'vaqueiro';

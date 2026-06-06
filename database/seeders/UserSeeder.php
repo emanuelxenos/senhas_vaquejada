@@ -31,5 +31,25 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('password123'),
             ]
         );
+
+        // Criar usuário Juiz de teste
+        User::firstOrCreate(
+            ['email' => 'juiz@senhas.com'],
+            [
+                'name' => 'Juiz de Teste',
+                'password' => Hash::make('password123'),
+                'role' => 'juiz',
+            ]
+        );
+
+        // Criar usuário Locutor de teste
+        User::firstOrCreate(
+            ['email' => 'locutor@senhas.com'],
+            [
+                'name' => 'Locutor de Teste',
+                'password' => Hash::make('password123'),
+                'role' => 'locutor',
+            ]
+        );
     }
 }

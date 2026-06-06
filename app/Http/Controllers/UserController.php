@@ -14,7 +14,7 @@ class UserController extends Controller
     {
         Gate::authorize('manage-settings');
         
-        $users = User::whereIn('role', ['admin', 'secretario', 'locutor'])
+        $users = User::whereIn('role', ['admin', 'secretario', 'locutor', 'juiz'])
             ->orderBy('name')
             ->paginate(15);
         
@@ -36,7 +36,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8|confirmed',
-            'role' => 'required|in:admin,secretario,locutor',
+            'role' => 'required|in:admin,secretario,locutor,juiz',
         ]);
         
         User::create([
@@ -63,7 +63,7 @@ class UserController extends Controller
         $rules = [
             'name' => 'required|string|max:255',
             'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
-            'role' => 'required|in:admin,secretario,locutor',
+            'role' => 'required|in:admin,secretario,locutor,juiz',
         ];
         
         if ($request->filled('password')) {

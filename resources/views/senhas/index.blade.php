@@ -7,9 +7,7 @@
     <div>
         <h1 class="mb-2">Senhas de Corrida</h1>
         <p class="text-muted mb-0">Total: <strong>{{ $total }}</strong> senhas exibidas</p>
-        @can('update-status')
-        <p class="text-muted small mb-0"><i class="fas fa-info-circle text-primary"></i> Clique em uma senha para atualizar o resultado dos bois (corridas) na pista.</p>
-        @endcan
+        <p class="text-muted small mb-0"><i class="fas fa-info-circle text-primary"></i> Clique em uma senha para ver detalhes @can('update-status')e atualizar os bois@endcan.</p>
     </div>
     <div class="d-flex flex-column align-items-end gap-3 w-sm-100">
         <div class="d-flex flex-wrap gap-2 justify-content-end w-100">
@@ -114,17 +112,15 @@
                 <hr>
 
                 <!-- Controle de bois de pista (Corrida) -->
-                @can('update-status')
                 <div class="mb-4" id="secaoBoisPista">
                     <h6 class="fw-bold mb-3"><i class="fas fa-gavel text-warning"></i> Resultados dos Bois na Pista</h6>
                     <div id="corridasLista" class="d-flex flex-column gap-3">
                         <!-- Gerado por JavaScript -->
                     </div>
                 </div>
-                @endcan
 
                 <!-- Formulário de Cancelamento (Apenas Admin/Secretaria) -->
-                @if(!auth()->user()->isLocutor())
+                @can('manage-cadastros')
                 <hr id="linhaDivisoriaCancelamento">
                 <form method="POST" id="senhaStatusForm">
                     @csrf
@@ -153,7 +149,7 @@
                 <div class="modal-footer px-0 pb-0 mt-3">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                 </div>
-                @endif
+                @endcan
             </div>
         </div>
     </div>
@@ -217,6 +213,8 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        const canUpdateStatus = @json(auth()->user()->can('update-status'));
+
         // Inicializar tooltips do Bootstrap
         const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -349,17 +347,24 @@
                         timeInfo = `<small class="text-muted d-block mt-1" id="corrida-time-${corrida.id}"></small>`;
                     }
 
+                    let btnGroup = '';
+                    if (canUpdateStatus) {
+                        btnGroup = `
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-success btn-update-corrida" data-corrida-id="${corrida.id}" data-resultado="boi_batido" ${corrida.resultado === 'boi_batido' ? 'disabled' : ''}>Valeu</button>
+                                <button type="button" class="btn btn-outline-danger btn-update-corrida" data-corrida-id="${corrida.id}" data-resultado="zero" ${corrida.resultado === 'zero' ? 'disabled' : ''}>Zero</button>
+                                <button type="button" class="btn btn-outline-secondary btn-update-corrida" data-corrida-id="${corrida.id}" data-resultado="pendente" ${corrida.resultado === 'pendente' ? 'disabled' : ''}>Pendente</button>
+                            </div>
+                        `;
+                    }
+
                     item.innerHTML = `
                         <div>
                             <strong class="text-dark">Boi ${corrida.numero_corrida}</strong>
                             <div class="mt-1" id="corrida-badge-${corrida.id}">${resultBadge}</div>
                             ${timeInfo}
                         </div>
-                        <div class="btn-group btn-group-sm" role="group">
-                            <button type="button" class="btn btn-outline-success btn-update-corrida" data-corrida-id="${corrida.id}" data-resultado="boi_batido" ${corrida.resultado === 'boi_batido' ? 'disabled' : ''}>Valeu</button>
-                            <button type="button" class="btn btn-outline-danger btn-update-corrida" data-corrida-id="${corrida.id}" data-resultado="zero" ${corrida.resultado === 'zero' ? 'disabled' : ''}>Zero</button>
-                            <button type="button" class="btn btn-outline-secondary btn-update-corrida" data-corrida-id="${corrida.id}" data-resultado="pendente" ${corrida.resultado === 'pendente' ? 'disabled' : ''}>Pendente</button>
-                        </div>
+                        ${btnGroup}
                     `;
                     listContainer.appendChild(item);
                 });
@@ -484,7 +489,6 @@
             modal.show();
         }
 
-        @can('update-status')
         document.querySelectorAll('.senha-card').forEach(card => {
             card.addEventListener('click', () => openModalFromCard(card));
             card.addEventListener('keydown', (e) => {
@@ -494,7 +498,6 @@
                 }
             });
         });
-        @endcan
         
         modalEl.addEventListener('hidden.bs.modal', function () {
             window.location.reload();
