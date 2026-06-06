@@ -312,6 +312,20 @@
             duplaEl.textContent = dupla;
             categoriaEl.innerHTML = `<strong>Categoria:</strong> ${categoria}`;
 
+            const formatDate = (isoString) => {
+                if (!isoString) return '';
+                const date = new Date(isoString);
+                if (isNaN(date.getTime())) return '';
+                const pad = (n) => String(n).padStart(2, '0');
+                const day = pad(date.getDate());
+                const month = pad(date.getMonth() + 1);
+                const year = date.getFullYear();
+                const hours = pad(date.getHours());
+                const minutes = pad(date.getMinutes());
+                const seconds = pad(date.getSeconds());
+                return `${day}/${month}/${year} às ${hours}:${minutes}:${seconds}`;
+            };
+
             // Renderizar bois/corridas
             if (listContainer) {
                 listContainer.innerHTML = '';
@@ -328,10 +342,18 @@
                         resultBadge = '<span class="badge bg-warning text-dark">Pendente</span>';
                     }
 
+                    let timeInfo = '';
+                    if (corrida.resultado !== 'pendente' && corrida.updated_at) {
+                        timeInfo = `<small class="text-muted d-block mt-1" id="corrida-time-${corrida.id}"><i class="far fa-clock"></i> em ${formatDate(corrida.updated_at)}</small>`;
+                    } else {
+                        timeInfo = `<small class="text-muted d-block mt-1" id="corrida-time-${corrida.id}"></small>`;
+                    }
+
                     item.innerHTML = `
                         <div>
                             <strong class="text-dark">Boi ${corrida.numero_corrida}</strong>
                             <div class="mt-1" id="corrida-badge-${corrida.id}">${resultBadge}</div>
+                            ${timeInfo}
                         </div>
                         <div class="btn-group btn-group-sm" role="group">
                             <button type="button" class="btn btn-outline-success btn-update-corrida" data-corrida-id="${corrida.id}" data-resultado="boi_batido" ${corrida.resultado === 'boi_batido' ? 'disabled' : ''}>Valeu</button>
@@ -381,6 +403,16 @@
                                     badgeSpan.innerHTML = '<span class="badge bg-warning text-dark">Pendente</span>';
                                 }
 
+                                // Atualizar a data/hora da corrida
+                                const timeSpan = document.getElementById(`corrida-time-${corridaId}`);
+                                if (timeSpan) {
+                                    if (resultado !== 'pendente' && data.corrida_updated_at) {
+                                        timeSpan.innerHTML = `<i class="far fa-clock"></i> em ${formatDate(data.corrida_updated_at)}`;
+                                    } else {
+                                        timeSpan.innerHTML = '';
+                                    }
+                                }
+
                                 // Atualizar status geral no modal
                                 statusBadgeEl.className = 'badge ' + (
                                     data.senha_status === 'boi_batido' ? 'bg-success' :
@@ -404,6 +436,9 @@
                                     const corridaIndex = cardCorridas.findIndex(c => c.id == corridaId);
                                     if (corridaIndex !== -1) {
                                         cardCorridas[corridaIndex].resultado = resultado;
+                                        if (data.corrida_updated_at) {
+                                            cardCorridas[corridaIndex].updated_at = data.corrida_updated_at;
+                                        }
                                         cardOriginal.setAttribute('data-corridas', JSON.stringify(cardCorridas));
                                     }
 

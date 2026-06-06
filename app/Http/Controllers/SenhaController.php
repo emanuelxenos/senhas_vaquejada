@@ -183,7 +183,8 @@ class SenhaController extends Controller
         return response()->json([
             'success' => true,
             'senha_status' => $senha->status,
-            'corrida_resultado' => $corrida->resultado
+            'corrida_resultado' => $corrida->resultado,
+            'corrida_updated_at' => $corrida->updated_at->toIso8601String()
         ]);
     }
 
