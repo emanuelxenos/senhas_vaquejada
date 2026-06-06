@@ -310,6 +310,21 @@
             <p class="tagline">Onde a poeira sobe e a tradição do vaqueiro se torna eterna.</p>
         </header>
 
+        @php
+            $cronograma = \App\Models\Setting::getValue('parque.cronograma');
+        @endphp
+
+        @if(!empty($cronograma))
+            <!-- Cronograma / Programação Oficial -->
+            <div class="manifesto" style="margin-bottom: 2.5rem; border-top: 2px solid var(--gold);">
+                <h2 style="font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 800; color: #fff; text-transform: uppercase; margin-bottom: 1.5rem; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <i class="far fa-calendar-alt text-warning"></i>
+                    Programação Oficial
+                </h2>
+                <div style="text-align: left; color: #ffedd5; line-height: 1.8; font-size: 1.1rem; white-space: pre-line; background: rgba(0, 0, 0, 0.2); padding: 1.5rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05);">{{ $cronograma }}</div>
+            </div>
+        @endif
+
         <!-- Manifesto Poético do Vaqueiro -->
         <div class="manifesto">
             <p class="poetry">

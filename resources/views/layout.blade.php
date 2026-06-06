@@ -360,6 +360,7 @@
             padding-left: 17px;
         }
     </style>
+    @yield('styles')
 </head>
 <body>
 @auth

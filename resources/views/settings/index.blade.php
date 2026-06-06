@@ -2,6 +2,27 @@
 
 @section('page-title', 'Configurações do Parque')
 
+@section('styles')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+<style>
+    .img-crop-container {
+        max-height: 400px;
+        width: 100%;
+        overflow: hidden;
+        background-color: #f7f7f7;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .img-crop-container img {
+        max-width: 100%;
+        max-height: 400px;
+        display: block;
+    }
+</style>
+@endsection
+
 @section('content')
     <h2>Configurações do Parque</h2>
     <p>Personalize os dados do parque para relatórios e PDFs.</p>
@@ -22,13 +43,20 @@
         <div class="mb-3">
             <label class="form-label" for="parque-logo">Logotipo do Parque</label>
             <input id="parque-logo" name="parque_logo" type="file" class="form-control @error('parque_logo') is-invalid @enderror">
-            <small class="text-muted">Formatos aceitos: JPG, PNG, GIF, SVG, WEBP (Max 2MB).</small>
+            <small class="text-muted">Formatos aceitos: JPG, PNG, GIF, SVG, WEBP (Max 2MB). O logotipo poderá ser recortado após a seleção.</small>
             @if(!empty($config['parque.logo']))
                 <div class="mt-2">
                     <img src="{{ asset($config['parque.logo']) }}" alt="Logo do Parque" style="max-height: 80px;" class="img-thumbnail">
                 </div>
             @endif
             @error('parque_logo')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="parque-cronograma">Cronograma / Programação do Evento</label>
+            <textarea id="parque-cronograma" name="parque[cronograma]" class="form-control @error('parque.cronograma') is-invalid @enderror" rows="5" placeholder="Digite aqui a programação do evento, horários, categorias e outras instruções relevantes...">{{ old('parque.cronograma', $config['parque.cronograma'] ?? '') }}</textarea>
+            <small class="text-muted">Esta informação será exibida em destaque na página inicial e no painel do vaqueiro.</small>
+            @error('parque.cronograma')<div class="invalid-feedback">{{ $message }}</div>@enderror
         </div>
 
         <div class="mb-3">
@@ -116,8 +144,33 @@
         <button type="submit" class="btn btn-primary mt-3">Salvar Configurações</button>
     </form>
 
+    <!-- Modal para Recortar Imagem -->
+    <div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cropModalLabel"><i class="fas fa-crop-alt me-2"></i>Recortar Logotipo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="img-crop-container">
+                        <img id="image-to-crop" src="">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="crop-button" class="btn btn-primary btn-sm">Recortar e Aplicar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@section('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Lógica do painel de pagamento existente
             const gatewaySelect = document.getElementById('payment-gateway');
             const asaasDiv = document.getElementById('asaas-config');
             const pagseguroDiv = document.getElementById('pagseguro-config');
@@ -135,6 +188,104 @@
 
             gatewaySelect.addEventListener('change', toggleGateways);
             toggleGateways(); // Call on load
+
+            // Lógica do Cropper.js para Logotipo do Parque
+            const fileInput = document.getElementById('parque-logo');
+            const cropModalEl = new bootstrap.Modal(document.getElementById('cropModal'), {
+                backdrop: 'static',
+                keyboard: false
+            });
+            const imageToCrop = document.getElementById('image-to-crop');
+            const cropConfirmBtn = document.getElementById('crop-button');
+            
+            let cropperInstance = null;
+            let originalFile = null;
+            let isCroppingConfirmed = false;
+
+            fileInput.addEventListener('change', function(e) {
+                const files = e.target.files;
+                if (files && files.length > 0) {
+                    originalFile = files[0];
+                    isCroppingConfirmed = false;
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        imageToCrop.src = event.target.result;
+                        cropModalEl.show();
+                    };
+                    reader.readAsDataURL(originalFile);
+                }
+            });
+
+            document.getElementById('cropModal').addEventListener('shown.bs.modal', function() {
+                cropperInstance = new Cropper(imageToCrop, {
+                    aspectRatio: 1, // Proporção padrão travada em 1:1 (quadrado)
+                    viewMode: 1,
+                    autoCropArea: 1,
+                    responsive: true,
+                    restore: false,
+                    guides: true,
+                    center: true,
+                    highlight: false,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false,
+                });
+            });
+
+            document.getElementById('cropModal').addEventListener('hidden.bs.modal', function() {
+                if (cropperInstance) {
+                    cropperInstance.destroy();
+                    cropperInstance = null;
+                }
+                imageToCrop.src = '';
+                
+                if (!isCroppingConfirmed) {
+                    fileInput.value = '';
+                }
+            });
+
+            cropConfirmBtn.addEventListener('click', function() {
+                if (cropperInstance) {
+                    const canvas = cropperInstance.getCroppedCanvas({
+                        maxWidth: 1200,
+                        maxHeight: 1200,
+                        imageSmoothingEnabled: true,
+                        imageSmoothingQuality: 'high'
+                    });
+
+                    if (canvas) {
+                        canvas.toBlob(function(blob) {
+                            const extension = originalFile.name.split('.').pop() || 'png';
+                            const croppedFile = new File([blob], 'cropped_logo.' + extension, {
+                                type: originalFile.type
+                            });
+
+                            const dataTransfer = new DataTransfer();
+                            dataTransfer.items.add(croppedFile);
+                            fileInput.files = dataTransfer.files;
+
+                            const container = fileInput.closest('.mb-3');
+                            let imgPreview = container.querySelector('.img-thumbnail');
+                            if (!imgPreview) {
+                                const wrapper = document.createElement('div');
+                                wrapper.className = 'mt-2';
+                                imgPreview = document.createElement('img');
+                                imgPreview.className = 'img-thumbnail';
+                                imgPreview.style.maxHeight = '80px';
+                                imgPreview.alt = 'Logo do Parque';
+                                wrapper.appendChild(imgPreview);
+                                container.appendChild(wrapper);
+                            }
+                            
+                            imgPreview.src = URL.createObjectURL(blob);
+
+                            isCroppingConfirmed = true;
+                            cropModalEl.hide();
+                        }, originalFile.type);
+                    }
+                }
+            });
         });
     </script>
 @endsection

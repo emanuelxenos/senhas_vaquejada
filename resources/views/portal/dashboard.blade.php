@@ -9,6 +9,20 @@
     <a href="{{ route('portal.inscricoes.create') }}" class="btn btn-primary text-sm" style="width: auto; padding: 0.6rem 1.25rem;">+ Nova Inscrição</a>
 </div>
 
+@php
+    $cronograma = \App\Models\Setting::getValue('parque.cronograma');
+@endphp
+
+@if(!empty($cronograma))
+    <div class="card mb-6" style="border-left: 4px solid var(--primary);">
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #fff; font-family: 'Outfit'; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
+            <i class="far fa-calendar-alt" style="color: var(--primary);"></i>
+            Programação / Cronograma do Evento
+        </h3>
+        <div style="color: #cbd5e1; line-height: 1.7; font-size: 0.95rem; white-space: pre-line; background: rgba(255,255,255,0.02); padding: 1rem; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.05);">{{ $cronograma }}</div>
+    </div>
+@endif
+
 @if($inscricoes->isEmpty())
     <div class="card text-center text-muted" style="padding: 4rem 2rem; border-style: dashed; border-color: rgba(255,255,255,0.1);">
         <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
