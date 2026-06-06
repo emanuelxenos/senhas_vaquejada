@@ -7,7 +7,7 @@
     <div>
         <h1 class="mb-2">Senhas de Corrida</h1>
         <p class="text-muted mb-0">Total: <strong>{{ $total }}</strong> senhas exibidas</p>
-        <p class="text-muted small mb-0"><i class="fas fa-info-circle text-primary"></i> Clique em uma senha para ver detalhes @can('update-status')e atualizar os bois@endcan.</p>
+        <p class="text-muted small mb-0"><i class="fas fa-info-circle text-primary"></i> Clique em uma senha para ver detalhes @if(auth()->user()->can('update-status')) e atualizar os bois @endif.</p>
     </div>
     <div class="d-flex flex-column align-items-end gap-3 w-sm-100">
         <div class="d-flex flex-wrap gap-2 justify-content-end w-100">
