@@ -59,6 +59,9 @@
     <p class="text-bold mt-2">Bate-Esteira:</p>
     <p>{{ $inscricao->bateEsteira->nome }}</p>
 
+    <p class="text-bold mt-2">Categoria:</p>
+    <p>{{ $inscricao->categoria ? $inscricao->categoria->nome : 'N/A' }}</p>
+
     <div class="divider"></div>
 
     <div class="info-row">
