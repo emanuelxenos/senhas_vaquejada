@@ -67,9 +67,7 @@
                 @foreach($senha->corridas as $corrida)
                     <span class="badge rounded-circle p-0 d-flex align-items-center justify-content-center"
                           style="width: 18px; height: 18px; font-size: 9px;
-                                 @if($corrida->resultado == 'boi_batido') background-color: #198754; color: white;
-                                 @elseif($corrida->resultado == 'zero') background-color: #dc3545; color: white;
-                                 @else background-color: rgba(255,255,255,0.35); color: white; @endif"
+                                 {{ $corrida->resultado == 'boi_batido' ? 'background-color: #198754; color: white;' : ($corrida->resultado == 'zero' ? 'background-color: #dc3545; color: white;' : 'background-color: rgba(255,255,255,0.35); color: white;') }}"
                           title="Boi {{ $corrida->numero_corrida }}: {{ $corrida->resultado == 'boi_batido' ? 'Valeu o Boi' : ($corrida->resultado == 'zero' ? 'Zero (Correu)' : 'Pendente') }}">
                         {{ $corrida->numero_corrida }}
                     </span>
@@ -77,11 +75,11 @@
             </div>
 
             <div class="senha-status">
-                <span class="badge
-                    @if($senha->status == 'boi_batido') bg-success
-                    @elseif($senha->status == 'correu') bg-danger text-white
-                    @elseif($senha->status == 'cancelado') bg-dark text-white
-                    @else bg-warning text-dark @endif" id="badge-status-{{ $senha->id }}">
+                <span class="badge {{
+                    $senha->status == 'boi_batido' ? 'bg-success' : (
+                    $senha->status == 'correu' ? 'bg-danger text-white' : (
+                    $senha->status == 'cancelado' ? 'bg-dark text-white' : 'bg-warning text-dark'))
+                }}" id="badge-status-{{ $senha->id }}">
                     {{ ucfirst(str_replace('_', ' ', $senha->status)) }}
                 </span>
             </div>

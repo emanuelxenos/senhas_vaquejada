@@ -23,6 +23,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (env('APP_URL') && str_contains(env('APP_URL'), 'https')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+        
         Gate::define('manage-settings', function (User $user) {
             return $user->isAdmin();
         });
