@@ -120,7 +120,7 @@
                 </div>
 
                 <!-- Formulário de Cancelamento (Apenas Admin/Secretaria) -->
-                @can('manage-cadastros')
+                @if(auth()->user()->can('manage-cadastros'))
                 <hr id="linhaDivisoriaCancelamento">
                 <form method="POST" id="senhaStatusForm">
                     @csrf
@@ -149,7 +149,7 @@
                 <div class="modal-footer px-0 pb-0 mt-3">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                 </div>
-                @endcan
+                @endif
             </div>
         </div>
     </div>
