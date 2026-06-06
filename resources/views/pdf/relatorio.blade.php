@@ -284,8 +284,8 @@
                     <th style="width: 13%;">Pagamento</th>
                     <th style="width: 12%;">Valor</th>
                     <th style="width: 10%;">Status</th>
-                    <th style="width: 10%;">Senhas</th>
-                    <th style="width: 8%;">Status Senhas</th>
+                    <th style="width: 6%;">Senhas</th>
+                    <th style="width: 12%;">Status Senhas</th>
                 </tr>
             </thead>
             <tbody>
@@ -306,17 +306,23 @@
                             @endif
                         </td>
                         <td style="text-align: center; font-weight: bold; color: #0d6efd;">{{ $inscricao->senhas_count }}</td>
-                        <td style="text-align: center;">
-                            @php
-                                $statusCount = $inscricao->senhas->groupBy('status');
-                                $correu = $statusCount->get('correu', collect())->count();
-                                $total = $inscricao->senhas->count();
-                            @endphp
-                            @if($total > 0)
-                                <span class="badge badge-available">{{ $correu }}/{{ $total }}</span>
-                            @else
-                                <span class="badge badge-unavailable">0/0</span>
-                            @endif
+                        <td style="text-align: left; font-size: 8px; line-height: 1.1;">
+                            @forelse($inscricao->senhas as $s)
+                                <div style="margin-bottom: 1px; white-space: nowrap;">
+                                    <strong>#{{ $s->numero_senha }}:</strong>
+                                    @if($s->status == 'boi_batido')
+                                        <span style="color: #155724; font-weight: bold;">Valeu</span>
+                                    @elseif($s->status == 'correu')
+                                        <span style="color: #721c24; font-weight: bold;">Zero</span>
+                                    @elseif($s->status == 'cancelado')
+                                        <span style="color: #6c757d; text-decoration: line-through;">Cancel.</span>
+                                    @else
+                                        <span style="color: #856404; font-weight: bold;">Pendente</span>
+                                    @endif
+                                </div>
+                            @empty
+                                <div style="text-align: center; color: #999;">-</div>
+                            @endforelse
                         </td>
                     </tr>
                 @empty
