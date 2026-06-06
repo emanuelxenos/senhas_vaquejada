@@ -311,7 +311,7 @@
                                 <div style="margin-bottom: 1px; white-space: nowrap;">
                                     <strong>#{{ $s->numero_senha }}:</strong>
                                     @if($s->status == 'boi_batido')
-                                        <span style="color: #155724; font-weight: bold;">Valeu</span>
+                                        <span style="color: #155724; font-weight: bold;">Boi Batido</span>
                                     @elseif($s->status == 'correu')
                                         <span style="color: #721c24; font-weight: bold;">Zero</span>
                                     @elseif($s->status == 'cancelado')

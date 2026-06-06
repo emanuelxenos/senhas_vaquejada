@@ -31,7 +31,7 @@
             <a href="{{ route('senhas.index', ['status' => 'todos', 'categoria_id' => $categoriaFiltro]) }}" class="btn {{ ($statusFiltro ?? 'todos') === 'todos' ? 'btn-primary' : 'btn-outline-primary' }}">Todos</a>
             <a href="{{ route('senhas.index', ['status' => 'pendente', 'categoria_id' => $categoriaFiltro]) }}" class="btn {{ ($statusFiltro ?? '') === 'pendente' ? 'btn-warning' : 'btn-outline-warning' }}">Pendente</a>
             <a href="{{ route('senhas.index', ['status' => 'correu', 'categoria_id' => $categoriaFiltro]) }}" class="btn {{ ($statusFiltro ?? '') === 'correu' ? 'btn-secondary' : 'btn-outline-secondary' }}">Correu</a>
-            <a href="{{ route('senhas.index', ['status' => 'boi_batido', 'categoria_id' => $categoriaFiltro]) }}" class="btn {{ ($statusFiltro ?? '') === 'boi_batido' ? 'btn-success' : 'btn-outline-success' }}">Boi Batido</a>
+            <a href="{{ route('senhas.index', ['status' => 'boi_batido', 'categoria_id' => $categoriaFiltro]) }}" class="btn {{ ($statusFiltro ?? '') === 'boi_batido' ? 'btn-success' : 'btn-outline-success' }}">Valeu o Boi</a>
             <a href="{{ route('senhas.index', ['status' => 'cancelado', 'categoria_id' => $categoriaFiltro]) }}" class="btn {{ ($statusFiltro ?? '') === 'cancelado' ? 'btn-danger' : 'btn-outline-danger' }}">Cancelado</a>
         </div>
     </div>
@@ -80,7 +80,7 @@
                     $senha->status == 'correu' ? 'bg-danger text-white' : (
                     $senha->status == 'cancelado' ? 'bg-dark text-white' : 'bg-warning text-dark'))
                 }}" id="badge-status-{{ $senha->id }}">
-                    {{ ucfirst(str_replace('_', ' ', $senha->status)) }}
+                    {{ $senha->status == 'boi_batido' ? 'Boi Batido' : ucfirst(str_replace('_', ' ', $senha->status)) }}
                 </span>
             </div>
         </div>
@@ -213,6 +213,11 @@
     document.addEventListener('DOMContentLoaded', function() {
         const canUpdateStatus = @json(auth()->user()->can('update-status'));
 
+        const formatStatus = (status) => {
+            if (status === 'boi_batido') return 'Boi Batido';
+            return status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ');
+        };
+
         // Inicializar tooltips do Bootstrap
         const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -264,7 +269,7 @@
                 (status === 'correu' ? 'bg-danger text-white' :
                 (status === 'cancelado' ? 'bg-dark text-white' : 'bg-warning text-dark'))
             );
-            statusBadgeEl.textContent = status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ');
+            statusBadgeEl.textContent = formatStatus(status);
 
             // Configurar select de alteração manual (evitando burlar os cálculos, apenas permitindo "Manter" ou "Cancelar")
             if (statusSelect) {
@@ -288,7 +293,7 @@
                 } else {
                     const optCalculado = document.createElement('option');
                     optCalculado.value = status;
-                    optCalculado.textContent = `Manter Calculado (${status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ')})`;
+                    optCalculado.textContent = `Manter Calculado (${formatStatus(status)})`;
                     optCalculado.selected = true;
                     statusSelect.appendChild(optCalculado);
 
@@ -422,11 +427,11 @@
                                     (data.senha_status === 'correu' ? 'bg-danger text-white' :
                                     (data.senha_status === 'cancelado' ? 'bg-dark text-white' : 'bg-warning text-dark'))
                                 );
-                                statusBadgeEl.textContent = data.senha_status.charAt(0).toUpperCase() + data.senha_status.slice(1).replace('_', ' ');
+                                statusBadgeEl.textContent = formatStatus(data.senha_status);
                                 
                                 if (statusSelect) {
                                     statusSelect.options[0].value = data.senha_status;
-                                    statusSelect.options[0].textContent = `Manter Calculado (${data.senha_status.charAt(0).toUpperCase() + data.senha_status.slice(1).replace('_', ' ')})`;
+                                    statusSelect.options[0].textContent = `Manter Calculado (${formatStatus(data.senha_status)})`;
                                 }
 
                                 // Atualizar badge e atributo do card original para evitar desconfigurações
@@ -453,7 +458,7 @@
                                             (data.senha_status === 'correu' ? 'bg-danger text-white' :
                                             (data.senha_status === 'cancelado' ? 'bg-dark text-white' : 'bg-warning text-dark'))
                                         );
-                                        cardBadge.innerText = data.senha_status.charAt(0).toUpperCase() + data.senha_status.slice(1).replace('_', ' ');
+                                        cardBadge.innerText = formatStatus(data.senha_status);
                                     }
 
                                     // Atualizar a bolinha do Boi no card
