@@ -24,6 +24,14 @@ class PortalAuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
+            if (!Auth::user()->isVaqueiro()) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                return back()->withErrors([
+                    'email' => 'Acesso restrito a vaqueiros. Usuários administrativos devem acessar pelo Painel Administrativo.',
+                ])->onlyInput('email');
+            }
             $request->session()->regenerate();
             return redirect()->intended(route('portal.dashboard'));
         }

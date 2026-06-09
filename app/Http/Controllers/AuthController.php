@@ -29,6 +29,14 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            if (Auth::user()->isVaqueiro()) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                return back()->withErrors([
+                    'email' => 'Acesso negado. Vaqueiros devem acessar pelo Portal do Vaqueiro.',
+                ])->onlyInput('email');
+            }
             $request->session()->regenerate();
             return redirect()->intended(route('dashboard'))->with('success', 'Login realizado com sucesso!');
         }

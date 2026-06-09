@@ -156,7 +156,11 @@
                                             <option value="1">Sim (Boi TV)</option>
                                         @endif
                                     </select>
-                                    @if(!$permitirBoiTv)
+                                    @if($permitirBoiTv)
+                                        <small class="text-muted mt-1 d-block" style="font-size: 0.75rem; line-height: 1.4; color: #a8a29e;">
+                                            <i class="fas fa-info-circle text-primary"></i> O <strong>Boi TV</strong> é o replay oficial do seu lance. Comprando antecipado você garante a gravação para revisão. Se deixar para a hora, terá de pagar um valor a mais para revisar o boi na pista.
+                                        </small>
+                                    @else
                                         <small class="text-muted mt-1 d-block" style="font-size: 0.75rem;">* Boi TV indisponível (data limite expirou).</small>
                                     @endif
                                 </div>
